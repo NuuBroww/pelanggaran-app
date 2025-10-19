@@ -90,61 +90,44 @@ date_default_timezone_set('Asia/Jakarta');
             margin-bottom: 40px;
         }
 
+        /* Logo Container - PERSEGI PANJANG */
         .logo-container {
-            width: 100px;
-            height: 100px;
+            width: 180px;  /* Lebar diperbesar */
+            height: 80px;  /* Tinggi tetap */
             margin: 0 auto 20px;
-            background: var(--gradient);
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.3);
-            border: 4px solid var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            border: 3px solid var(--bg-white);
             overflow: hidden;
+            background: var(--bg-white);
             position: relative;
         }
 
-        .logo-container::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: var(--gradient);
-            border-radius: 50%;
-            z-index: -1;
-            animation: rotate 3s linear infinite;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .logo-img {
-            width: 85%;
-            height: 85%;
-            object-fit: contain;
-            border-radius: 50%;
-            background: var(--bg-white);
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Biar logo proporsional */
+            border-radius: 8px;
             padding: 8px;
         }
 
         .logo-placeholder {
             width: 100%;
             height: 100%;
-            background: var(--bg-white);
-            border-radius: 50%;
+            background: var(--gradient);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
+            color: var(--bg-white);
             font-size: 14px;
             font-weight: 700;
             text-align: center;
-            padding: 15px;
+            padding: 10px;
+            line-height: 1.3;
         }
 
         .login-title {
@@ -377,9 +360,10 @@ date_default_timezone_set('Asia/Jakarta');
                 border-radius: 20px;
             }
 
+            /* Logo mobile */
             .logo-container {
-                width: 80px;
-                height: 80px;
+                width: 160px;
+                height: 70px;
                 margin-bottom: 15px;
             }
 
@@ -393,7 +377,7 @@ date_default_timezone_set('Asia/Jakarta');
 
             .input-field {
                 padding: 14px 45px 14px 14px;
-                font-size: 16px; /* Prevent zoom on iOS */
+                font-size: 16px;
             }
 
             .toggle-password {
@@ -416,6 +400,11 @@ date_default_timezone_set('Asia/Jakarta');
         @media (max-width: 360px) {
             .login-container {
                 padding: 25px 20px;
+            }
+
+            .logo-container {
+                width: 140px;
+                height: 60px;
             }
 
             .login-title {
@@ -443,8 +432,7 @@ date_default_timezone_set('Asia/Jakarta');
             .bg-animation,
             .login-container,
             .input-field,
-            .login-btn,
-            .logo-container::before {
+            .login-btn {
                 animation: none;
                 transition: none;
             }
@@ -459,29 +447,17 @@ date_default_timezone_set('Asia/Jakarta');
         <div class="login-header">
             <div class="logo-container">
                 <?php
-                $logoPath = base_url('assets/img/logoutama');
-                $logoExtensions = ['.png', '.jpg', '.jpeg', '.svg', '.webp'];
-                $logoFound = false;
-                
-                foreach ($logoExtensions as $ext) {
-                    if (file_exists(FCPATH . 'assets/img/logoutama' . $ext)) {
-                        $logoFound = true;
-                        break;
-                    }
-                }
+                $logoPath = FCPATH . 'assets/img/logo.png';
+                $logoFound = file_exists($logoPath);
                 ?>
                 
                 <?php if ($logoFound): ?>
-                    <img src="<?= base_url('assets/img/logou') ?>" 
+                    <img src="<?= base_url('assets/img/logo.png') ?>" 
                          alt="Logo E-Mahkamah" 
-                         class="logo-img"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="logo-placeholder" style="display: none;">
-                        🏛️
-                    </div>
+                         class="logo-img">
                 <?php else: ?>
                     <div class="logo-placeholder">
-                        🏛️
+                        🏛️ E-Mahkamah
                     </div>
                 <?php endif; ?>
             </div>
@@ -626,20 +602,6 @@ date_default_timezone_set('Asia/Jakarta');
                 setTimeout(() => {
                     usernameField.focus();
                 }, 400);
-            }
-        });
-
-        // Handle logo error fallback
-        document.addEventListener('DOMContentLoaded', function() {
-            const logoImg = document.querySelector('.logo-img');
-            if (logoImg) {
-                logoImg.addEventListener('error', function() {
-                    this.style.display = 'none';
-                    const placeholder = this.nextElementSibling;
-                    if (placeholder && placeholder.classList.contains('logo-placeholder')) {
-                        placeholder.style.display = 'flex';
-                    }
-                });
             }
         });
 
