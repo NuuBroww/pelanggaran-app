@@ -2,11 +2,16 @@
 
 namespace App\Controllers;
 
+namespace App\Controllers;
+
 use App\Models\SantriModel;
 use App\Models\PoinBulananModel;
 use App\Models\PelanggaranModel;
 use App\Models\AdminLogModel;
 use App\Models\RekapanModel;
+use App\Models\PoinSemesteranModel;
+use App\Models\SuratSPModel;
+use App\Models\RiwayatPoinModel;
 
 class Pelanggaran extends BaseController
 {
@@ -15,6 +20,9 @@ class Pelanggaran extends BaseController
     protected $pelanggaranModel;
     protected $adminLogModel;
     protected $rekapanModel;
+    protected $poinSemesteranModel;
+    protected $suratSPModel;
+    protected $riwayatPoinModel;
 
     public function __construct()
     {
@@ -23,6 +31,9 @@ class Pelanggaran extends BaseController
         $this->pelanggaranModel = new PelanggaranModel();
         $this->adminLogModel = new AdminLogModel();
         $this->rekapanModel = new RekapanModel();
+        $this->poinSemesteranModel = new PoinSemesteranModel();
+        $this->suratSPModel = new SuratSPModel();
+        $this->riwayatPoinModel = new RiwayatPoinModel();
     }
 
     public function index()
@@ -30,6 +41,108 @@ class Pelanggaran extends BaseController
         return redirect()->to('/dashboard');
     }
 
+    // === METHOD YANG PERLU DITAMBAH ===
+    public function add_poin()
+    {
+        // Cek role - hanya role 1 & 2 yang bisa akses
+        $session = session();
+        $id_role = $session->get('id_role');
+        
+        if ($id_role == 3) {
+            session()->setFlashdata('error', 'Akses ditolak. Yayasan tidak dapat menambah data pelanggaran.');
+            return redirect()->to('/dashboard');
+        }
+
+        // Ambil data dari form
+        $nis = $this->request->getPost('nis');
+        $bulan = $this->request->getPost('bulan');
+        $jenis = $this->request->getPost('jenis');
+        $detail = trim($this->request->getPost('detail'));
+        $poin = (int) $this->request->getPost('poin');
+        $kategori = $this->request->getPost('kategori');
+        $tahun_ajaran = $this->request->getPost('tahun_ajaran') ?? '2025/2026';
+        $semester = $this->request->getPost('semester') ?? 'ganjil';
+
+        // VALIDASI LENGKAP
+        if (empty($nis) || empty($bulan) || empty($jenis) || empty($detail) || $poin < 1 || empty($kategori)) {
+            session()->setFlashdata('error', 'Semua field harus diisi!');
+            return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan?tahun_ajaran=$tahun_ajaran&semester=$semester");
+        }
+
+        // Label jenis pelanggaran
+        $labelJenis = match ($jenis) {
+            'telat_sholat' => 'Telat Sholat',
+            'tidak_sholat_berjamaah' => 'Tidak Sholat Berjamaah',
+            'tidak_piket' => 'Tidak Piket',
+            default => 'Pelanggaran Lain'
+        };
+
+        $keterangan_baru = "$labelJenis: " . ucfirst($detail);
+        $tanggal = date('Y-m-d H:i:s');
+
+        // DATA YANG AKAN DISIMPAN
+        $data = [
+            'nis' => $nis,
+            'bulan' => $bulan,
+            'semester' => $semester,
+            'tahun_ajaran' => $tahun_ajaran,
+            'poin' => $poin,
+            'keterangan' => $keterangan_baru,
+            'detail_pelanggaran' => $detail,
+            'kategori' => $kategori,
+            'tanggal' => $tanggal,
+            'created_at' => $tanggal,
+            'updated_at' => $tanggal
+        ];
+
+        // VALIDASI DATA
+        if (empty($data['nis']) || empty($data['bulan'])) {
+            session()->setFlashdata('error', 'Data NIS atau Bulan tidak valid!');
+            return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan?tahun_ajaran=$tahun_ajaran&semester=$semester");
+        }
+
+        try {
+            $poinId = $this->poinBulananModel->insert($data);
+
+            if ($poinId) {
+                // Update rekapan dan poin semesteran
+                $this->rekapanModel->generateRekapan($tahun_ajaran, $semester);
+                $this->poinSemesteranModel->updateSemesteran($tahun_ajaran, $semester);
+                $this->suratSPModel->autoGenerateSPFromPoinSemesteran($tahun_ajaran, $semester);
+
+                // Update total poin santri (jika method ini ada)
+                if (method_exists($this->poinBulananModel, 'getTotalPoin')) {
+                    $total = $this->poinBulananModel->getTotalPoin($nis);
+                    if (method_exists($this->santriModel, 'updatePoin')) {
+                        $this->santriModel->updatePoin($nis, $total);
+                    }
+                }
+
+                // Log admin
+                $adminId = session()->get('admin_id');
+                $santri = $this->santriModel->where('nis', $nis)->first();
+                $nama_santri = $santri['nama_santri'] ?? 'Santri Tidak Diketahui';
+
+                $this->adminLogModel->insert([
+                    'admin_id' => $adminId,
+                    'action' => "Menambahkan pelanggaran ($keterangan_baru) untuk $nama_santri pada bulan $bulan",
+                    'target_id' => $poinId,
+                    'created_at' => $tanggal,
+                ]);
+
+                session()->setFlashdata('success', "Pelanggaran '$keterangan_baru' berhasil ditambahkan!");
+            } else {
+                session()->setFlashdata('error', 'Gagal menyimpan data!');
+            }
+        } catch (\Exception $e) {
+            session()->setFlashdata('error', 'Error: ' . $e->getMessage());
+        }
+
+        return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan?tahun_ajaran=$tahun_ajaran&semester=$semester");
+    }
+
+    // === METHOD-METHOD LAIN YANG PERLU DITAMBAH ===
+    
     public function getPoinSemuaBulan($nis)
     {
         $bulanList = ['Juli','Agustus','September','Oktober','November','Desember'];
@@ -98,6 +211,10 @@ class Pelanggaran extends BaseController
             return redirect()->to('/dashboard')->with('error', 'Akses ditolak. Yayasan tidak dapat mengubah data pelanggaran.');
         }
 
+        // Ambil parameter tahun ajaran dan semester
+        $tahun_ajaran = $this->request->getGet('tahun_ajaran') ?? '2025/2026';
+        $semester = $this->request->getGet('semester') ?? 'ganjil';
+
         $poinBulanan = $this->poinBulananModel
                             ->where(['nis' => $nis, 'bulan' => $bulan])
                             ->findAll();
@@ -109,6 +226,8 @@ class Pelanggaran extends BaseController
             'nis' => $nis,
             'bulan' => $bulan,
             'nama' => $nama_santri,
+            'tahun_ajaran' => $tahun_ajaran,
+            'semester' => $semester,
             'success' => session()->getFlashdata('success'),
             'error' => session()->getFlashdata('error'),
             'poinBulanan' => $poinBulanan,
@@ -124,112 +243,30 @@ class Pelanggaran extends BaseController
 
         return view('update_pelanggaran', $data);
     }
-
-    public function add_poin()
-{
-    // Cek role - hanya role 1 & 2 yang bisa akses
-    $session = session();
-    $id_role = $session->get('id_role');
     
-    if ($id_role == 3) {
-        session()->setFlashdata('error', 'Akses ditolak. Yayasan tidak dapat menambah data pelanggaran.');
-        return redirect()->to('/dashboard');
-    }
-
-    // Debug dulu data yang masuk
-    $nis      = $this->request->getPost('nis');
-    $bulan    = $this->request->getPost('bulan');
-    $jenis    = $this->request->getPost('jenis');
-    $detail   = trim($this->request->getPost('detail'));
-    $poin     = (int) $this->request->getPost('poin');
-    $kategori = $this->request->getPost('kategori');
-
-    // VALIDASI LENGKAP
-    if (empty($nis) || empty($bulan) || empty($jenis) || empty($detail) || $poin < 1 || empty($kategori)) {
-        session()->setFlashdata('error', 'Semua field harus diisi!');
-        return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan");
-    }
-
-    // Label jenis pelanggaran
-    $labelJenis = match ($jenis) {
-        'telat_sholat' => 'Telat Sholat',
-        'tidak_sholat_berjamaah' => 'Tidak Sholat Berjamaah',
-        'tidak_piket' => 'Tidak Piket',
-        default => 'Pelanggaran Lain'
-    };
-
-    $keterangan_baru = "$labelJenis " . ucfirst($detail);
-    $tanggal = date('Y-m-d H:i:s');
-
-    // Tentukan semester berdasarkan bulan
-    $bulanGanjil = ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    $semester = in_array($bulan, $bulanGanjil) ? 'ganjil' : 'genap';
-    
-    // Tahun ajaran (sesuaikan dengan kebutuhan)
-    $tahun_ajaran = '2025/2026'; // atau ambil dari session/config
-
-    // DATA YANG AKAN DISIMPAN - PASTIKAN SEMUA FIELD ADA
-    $data = [
-        'nis' => $nis,
-        'bulan' => $bulan,
-        'semester' => $semester, // TAMBAHIN INI
-        'tahun_ajaran' => $tahun_ajaran, // TAMBAHIN INI
-        'poin' => $poin,
-        'keterangan' => $keterangan_baru,
-        'detail_pelanggaran' => $detail,
-        'kategori' => $kategori,
-        'tanggal' => $tanggal,
-        'created_at' => $tanggal, // biasanya ada created_at
-        'updated_at' => $tanggal  // biasanya ada updated_at
-    ];
-
-    // CEK DULU SEBELUM INSERT
-    if (empty($data['nis']) || empty($data['bulan'])) {
-        session()->setFlashdata('error', 'Data NIS atau Bulan tidak valid!');
-        return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan");
-    }
-
-    try {
-        $poinId = $this->poinBulananModel->insert($data);
-
-        if ($poinId) {
-            // Update total poin santri (jika method ini ada)
-            if (method_exists($this->poinBulananModel, 'getTotalPoin')) {
-                $total = $this->poinBulananModel->getTotalPoin($nis);
-                if (method_exists($this->santriModel, 'updatePoin')) {
-                    $this->santriModel->updatePoin($nis, $total);
-                }
-            }
-
-            // Log admin
-            $adminId = session()->get('admin_id');
-            $santri = $this->santriModel->where('nis', $nis)->first();
-            $nama_santri = $santri['nama_santri'] ?? 'Santri Tidak Diketahui';
-
-            $this->adminLogModel->insert([
-                'admin_id' => $adminId,
-                'action' => "Menambahkan pelanggaran ($keterangan_baru) untuk $nama_santri pada bulan $bulan",
-                'target_id' => $poinId,
-                'created_at' => $tanggal,
-            ]);
-
-            session()->setFlashdata('success', "Pelanggaran '$keterangan_baru' berhasil ditambahkan!");
-        } else {
-            session()->setFlashdata('error', 'Gagal menyimpan data!');
-        }
-    } catch (\Exception $e) {
-        session()->setFlashdata('error', 'Error: ' . $e->getMessage());
-    }
-
-    return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan");
-}
 
     public function delete_poin()
     {
-        $id    = $this->request->getPost('id');
-        $nis   = $this->request->getPost('nis');
+        // Cek role - hanya role 1 & 2 yang bisa akses
+        $session = session();
+        $id_role = $session->get('id_role');
+        
+        if ($id_role == 3) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Akses ditolak untuk yayasan']);
+            }
+            session()->setFlashdata('error', 'Akses ditolak. Yayasan tidak dapat menghapus data pelanggaran.');
+            return redirect()->to('/dashboard');
+        }
+
+        $id = $this->request->getPost('id');
+        $nis = $this->request->getPost('nis');
         $bulan = $this->request->getPost('bulan');
-        $isAjax = $this->request->isAJAX(); // cek kalau lewat fetch()
+        $tahun_ajaran = $this->request->getPost('tahun_ajaran') ?? '2025/2026';
+        $semester = $this->request->getPost('semester') ?? 'ganjil';
+        $alasan_penghapusan = $this->request->getPost('catatan_penghapusan'); // Ganti nama jadi alasan_penghapusan
+        $poin_dihapus = $this->request->getPost('poin_dihapus');
+        $isAjax = $this->request->isAJAX();
 
         if (!$id || !$nis) {
             $msg = ['status' => 'error', 'message' => 'Data tidak valid untuk dihapus!'];
@@ -242,32 +279,77 @@ class Pelanggaran extends BaseController
             return redirect()->back();
         }
 
-        // 1️⃣ Hapus dari poin_bulanan
-        $deleted = $this->poinBulananModel->delete($id);
+        try {
+            // 1️⃣ Ambil data poin sebelum dihapus untuk riwayat
+            $poinData = $this->poinBulananModel->find($id);
+            if (!$poinData) {
+                throw new \Exception('Data poin tidak ditemukan');
+            }
 
-        if ($deleted) {
-            // 2️⃣ Hapus rekapan milik NIS yang sama
-            $this->rekapanModel->where('nis', $nis)->delete();
+            $poin_yang_dihapus = $poinData['poin'] ?? $poin_dihapus;
+            $keterangan_poin = $poinData['keterangan'] ?? 'Data poin';
+            $kategori_poin = $poinData['kategori'] ?? 'ringan';
+            $bulan_poin = $poinData['bulan'] ?? $bulan;
 
-            // 3️⃣ Update total poin santri
-            $total = $this->poinBulananModel->getTotalPoin($nis);
-            $this->santriModel->updatePoin($nis, $total);
+            // 2️⃣ Simpan ke riwayat_poin SEBELUM menghapus
+            $riwayatSaved = $this->simpanKeRiwayatPoin(
+                $nis,
+                $id, // id_poin_asli
+                $poin_yang_dihapus,
+                $keterangan_poin,
+                $alasan_penghapusan,
+                $kategori_poin,
+                $bulan_poin,
+                $tahun_ajaran,
+                $semester
+            );
 
-            // 4️⃣ Catat log admin
-            $adminId = session()->get('admin_id');
-            $santri     = $this->santriModel->where('nis', $nis)->first();
-            $namaSantri = $santri['nama_santri'] ?? 'Tidak diketahui';
+            if (!$riwayatSaved) {
+                throw new \Exception('Gagal menyimpan riwayat penghapusan');
+            }
 
-            $this->adminLogModel->insert([
-                'admin_id'   => $adminId,
-                'action'     => "Menghapus poin bulanan & rekapan milik $namaSantri ($nis)",
-                'target_id'  => $id,
-                'created_at' => date('Y-m-d H:i:s', strtotime('+7 hours')),
-            ]);
+            // 3️⃣ Hapus dari poin_bulanan
+            $deleted = $this->poinBulananModel->delete($id);
 
-            $msg = ['status' => 'success', 'message' => 'Data poin & rekapan berhasil dihapus.'];
-        } else {
-            $msg = ['status' => 'error', 'message' => 'Gagal menghapus data poin.'];
+            if ($deleted) {
+                // 4️⃣ Update semua sistem
+                $this->rekapanModel->generateRekapan($tahun_ajaran, $semester);
+                $this->poinSemesteranModel->updateSemesteran($tahun_ajaran, $semester);
+                $this->suratSPModel->autoGenerateSPFromPoinSemesteran($tahun_ajaran, $semester);
+
+                // 5️⃣ Update total poin santri
+                if (method_exists($this->poinBulananModel, 'getTotalPoin')) {
+                    $total = $this->poinBulananModel->getTotalPoin($nis);
+                    if (method_exists($this->santriModel, 'updatePoin')) {
+                        $this->santriModel->updatePoin($nis, $total);
+                    }
+                }
+
+                // 6️⃣ Catat log admin
+                $adminId = session()->get('admin_id');
+                $santri = $this->santriModel->where('nis', $nis)->first();
+                $namaSantri = $santri['nama_santri'] ?? 'Tidak diketahui';
+
+                $this->adminLogModel->insert([
+                    'admin_id'   => $adminId,
+                    'action'     => "Menghapus poin: $keterangan_poin ($poin_yang_dihapus poin) milik $namaSantri. Alasan: " . ($alasan_penghapusan ?: 'Tidak ada alasan'),
+                    'target_id'  => $id,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]);
+
+                $msg = [
+                    'status' => 'success', 
+                    'message' => '✅ Poin berhasil dihapus dan riwayat disimpan.',
+                    'poin_dihapus' => $poin_yang_dihapus,
+                    'alasan' => $alasan_penghapusan
+                ];
+            } else {
+                $msg = ['status' => 'error', 'message' => '❌ Gagal menghapus data poin.'];
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error deleting poin: ' . $e->getMessage());
+            $msg = ['status' => 'error', 'message' => '❌ Terjadi kesalahan sistem: ' . $e->getMessage()];
         }
 
         // Kalau request-nya lewat AJAX → kirim JSON
@@ -282,6 +364,110 @@ class Pelanggaran extends BaseController
             session()->setFlashdata('error', $msg['message']);
         }
 
-        return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan");
+        return redirect()->to("pelanggaran/update_pelanggaran/$nis/$bulan?tahun_ajaran=$tahun_ajaran&semester=$semester");
+    }
+    
+
+    /**
+     * METHOD BARU: Simpan ke tabel riwayat_poin
+     */
+    private function simpanKeRiwayatPoin($nis, $id_poin_asli, $poin_dihapus, $keterangan_poin, $alasan_penghapusan, $kategori_poin, $bulan_poin, $tahun_ajaran, $semester)
+    {
+        try {
+            $dataRiwayat = [
+                'nis' => $nis,
+                'id_poin_asli' => $id_poin_asli,
+                'poin_dihapus' => $poin_dihapus,
+                'keterangan_poin' => $keterangan_poin,
+                'alasan_penghapusan' => $alasan_penghapusan ?: 'Tidak ada alasan',
+                'kategori_poin' => $kategori_poin,
+                'bulan_poin' => $bulan_poin,
+                'tahun_ajaran' => $tahun_ajaran,
+                'semester' => $semester,
+                'dihapus_oleh' => session()->get('nama') ?? 'System',
+                'tanggal_dihapus' => date('Y-m-d H:i:s')
+            ];
+
+            $result = $this->riwayatPoinModel->simpanRiwayat($dataRiwayat);
+            
+            if ($result) {
+                log_message('debug', "Riwayat penghapusan disimpan untuk NIS: $nis, Poin: $poin_dihapus");
+                return true;
+            } else {
+                log_message('error', "Gagal menyimpan riwayat penghapusan untuk NIS: $nis");
+                return false;
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error saving to riwayat_poin: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * METHOD BARU: Lihat riwayat penghapusan poin
+     */
+    public function lihat_riwayat_penghapusan($nis = null)
+    {
+        // Cek role - hanya role 1 & 2 yang bisa akses
+        $session = session();
+        $id_role = $session->get('id_role');
+        
+        if ($id_role == 3) {
+            return redirect()->to('/dashboard')->with('error', 'Akses ditolak. Yayasan tidak dapat melihat riwayat penghapusan.');
+        }
+
+        $tahun_ajaran = $this->request->getGet('tahun_ajaran') ?? '2025/2026';
+        $semester = $this->request->getGet('semester') ?? 'ganjil';
+        
+        // Jika ada NIS tertentu, ambil riwayat untuk NIS itu
+        $riwayat = [];
+        $totalPoinDihapus = 0;
+        $santriData = null;
+
+        if ($nis) {
+            $riwayat = $this->riwayatPoinModel->getRiwayatByNis($nis, $tahun_ajaran, $semester);
+            $totalPoinDihapus = $this->riwayatPoinModel->getTotalPoinDihapus($nis, $tahun_ajaran, $semester);
+            $santriData = $this->santriModel->where('nis', $nis)->first();
+        }
+
+        $data = [
+            'title' => 'Riwayat Penghapusan Poin',
+            'riwayat' => $riwayat,
+            'nis' => $nis,
+            'santri' => $santriData,
+            'total_poin_dihapus' => $totalPoinDihapus,
+            'tahun_ajaran' => $tahun_ajaran,
+            'semester' => $semester,
+            'id_role' => $id_role
+        ];
+
+        return view('riwayat_penghapusan', $data);
+    }
+
+    /**
+     * METHOD BARU: API untuk get riwayat penghapusan
+     */
+    public function get_riwayat_penghapusan($nis)
+    {
+        $tahun_ajaran = $this->request->getGet('tahun_ajaran') ?? '2025/2026';
+        $semester = $this->request->getGet('semester') ?? 'ganjil';
+
+        try {
+            $riwayat = $this->riwayatPoinModel->getRiwayatByNis($nis, $tahun_ajaran, $semester);
+            $totalPoinDihapus = $this->riwayatPoinModel->getTotalPoinDihapus($nis, $tahun_ajaran, $semester);
+            
+            return $this->response->setJSON([
+                'status' => 'success',
+                'data' => $riwayat,
+                'total_poin_dihapus' => $totalPoinDihapus
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Error getting riwayat penghapusan: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Gagal mengambil riwayat penghapusan'
+            ]);
+        }
     }
 }

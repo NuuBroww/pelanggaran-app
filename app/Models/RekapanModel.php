@@ -385,4 +385,70 @@ public function isTahunAjaranAvailable($tahun_ajaran)
         $currentMonth = date('n');
         return ($currentMonth >= 1 && $currentMonth <= 6) ? 'genap' : 'ganjil';
     }
+
+    /**
+ * METHOD BARU: Get riwayat penghapusan poin
+ */
+public function getRiwayatPenghapusan($nis, $tahun_ajaran = null, $semester = null)
+{
+    try {
+        $where = ['nis' => $nis];
+        
+        if ($tahun_ajaran) {
+            $where['tahun_ajaran'] = $tahun_ajaran;
+        }
+        if ($semester) {
+            $where['semester'] = $semester;
+        }
+
+        $result = $this->where($where)
+            ->select('catatan_poin_penghapusan, total_poin_dihapus, dihapus_oleh, tanggal_dihapus, updated_at')
+            ->orderBy('tanggal_dihapus', 'DESC')
+            ->findAll();
+
+        // Format data untuk response
+        $riwayat = [];
+        foreach ($result as $row) {
+            if (!empty($row['catatan_poin_penghapusan'])) {
+                $riwayat[] = [
+                    'catatan' => $row['catatan_poin_penghapusan'],
+                    'total_poin_dihapus' => $row['total_poin_dihapus'] ?? 0,
+                    'dihapus_oleh' => $row['dihapus_oleh'] ?? 'System',
+                    'tanggal_dihapus' => $row['tanggal_dihapus'] ?? $row['updated_at']
+                ];
+            }
+        }
+
+        return $riwayat;
+
+    } catch (\Exception $e) {
+        log_message('error', 'Error getting deletion history: ' . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * METHOD BARU: Update catatan penghapusan
+ */
+public function updateCatatanPenghapusan($nis, $poin_dihapus, $catatan, $tahun_ajaran, $semester)
+{
+    try {
+        $data = [
+            'total_poin_dihapus' => $this->db->escape($poin_dihapus),
+            'catatan_poin_penghapusan' => $this->db->escape($catatan),
+            'dihapus_oleh' => $this->db->escape(session()->get('nama') ?? 'System'),
+            'tanggal_dihapus' => $this->db->escape(date('Y-m-d H:i:s'))
+        ];
+
+        return $this->where([
+            'nis' => $nis,
+            'tahun_ajaran' => $tahun_ajaran,
+            'semester' => $semester
+        ])->set($data)->update();
+
+    } catch (\Exception $e) {
+        log_message('error', 'Error updating deletion note: ' . $e->getMessage());
+        return false;
+    }
+}
 }

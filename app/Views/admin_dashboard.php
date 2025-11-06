@@ -697,15 +697,6 @@
           </div>
           <?php endif; ?>
           
-          <!-- Toggle Theme -->
-          <?php if ($id_role == 1 || $id_role == 2): ?>
-          <div class="stat-item" style="cursor: pointer; background: rgba(52, 152, 219, 0.2);" id="themeToggle">
-              <span class="stat-number">
-                  <i class="fas fa-moon" id="themeIcon"></i>
-              </span>
-              <span class="stat-label" id="themeLabel">Mode Gelap</span>
-          </div>
-          <?php endif; ?>
           
           <div class="stat-item" style="cursor: pointer; background: rgba(155, 89, 182, 0.2);">
               <a href="<?= base_url('/dashboard/grafik_pelanggaran') ?>" style="text-decoration: none; color: white; display: block;">

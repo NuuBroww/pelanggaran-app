@@ -438,4 +438,42 @@ class RekapanController extends BaseController
         
         return $tahunAjaran;
     }
+
+    public function lihat_riwayat_penghapusan($nis = null)
+{
+    // Cek role - hanya role 1 & 2 yang bisa akses
+    $session = session();
+    $id_role = $session->get('id_role');
+    
+    if ($id_role == 3) {
+        return redirect()->to('/dashboard')->with('error', 'Akses ditolak. Yayasan tidak dapat melihat riwayat penghapusan.');
+    }
+
+    $tahun_ajaran = $this->request->getGet('tahun_ajaran') ?? '2025/2026';
+    $semester = $this->request->getGet('semester') ?? 'ganjil';
+    
+    // Jika ada NIS tertentu, ambil riwayat untuk NIS itu
+    $riwayat = [];
+    $totalPoinDihapus = 0;
+    $santriData = null;
+
+    if ($nis) {
+        $riwayat = $this->riwayatPoinModel->getRiwayatByNis($nis, $tahun_ajaran, $semester);
+        $totalPoinDihapus = $this->riwayatPoinModel->getTotalPoinDihapus($nis, $tahun_ajaran, $semester);
+        $santriData = $this->santriModel->where('nis', $nis)->first();
+    }
+
+    $data = [
+        'title' => 'Riwayat Penghapusan Poin',
+        'riwayat' => $riwayat,
+        'nis' => $nis,
+        'santri' => $santriData,
+        'total_poin_dihapus' => $totalPoinDihapus,
+        'tahun_ajaran' => $tahun_ajaran,
+        'semester' => $semester,
+        'id_role' => $id_role
+    ];
+
+    return view('riwayat_penghapusan', $data);
+}
 }

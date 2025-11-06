@@ -19,6 +19,8 @@ if ($id_role == 3) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Update Pelanggaran - <?= esc($bulan ?? '') ?> (NIS: <?= esc($nis ?? '') ?>)</title>
+<!-- Bootstrap CSS untuk modal -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 /* ===== Reset & Font ===== */
 :root {
@@ -380,7 +382,7 @@ body.dark-mode .mobile-card-actions {
     border-radius: 15px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     animation: modalSlideIn 0.3s ease;
 }
 
@@ -411,7 +413,6 @@ body.dark-mode .modal-content {
 
 .modal-body {
     margin-bottom: 25px;
-    text-align: center;
 }
 
 .modal-actions {
@@ -442,6 +443,38 @@ body.dark-mode .modal-content {
 body.dark-mode .no-data {
     background: var(--dark-card);
     color: #bbb;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+body.dark-mode .alert-success {
+    background-color: #155724;
+    border-color: #0f4019;
+    color: #d4edda;
+}
+
+body.dark-mode .alert-error {
+    background-color: #721c24;
+    border-color: #5a151b;
+    color: #f8d7da;
 }
 
 /* ===== RESPONSIVE BREAKPOINTS ===== */
@@ -561,30 +594,50 @@ body.dark-mode .footer {
                     <?= esc($nama ?? 'Nama Tidak Diketahui') ?> - <?= esc($bulan ?? '') ?>
                     <br>
                     <small>
+                        NIS: <?= esc($nis ?? '') ?> | 
+                        Tahun Ajaran: <?= esc($tahun_ajaran ?? '2025/2026') ?> | 
+                        Semester: <?= esc($semester ?? 'ganjil') ?>
+                        <br>
                         <?php if ($id_role == 1): ?>
-                            👨‍🏫 Akses: Ustadz Biasa
+                            👨‍🏫 Akses: Ustadz PTD Ar - Rahman
                         <?php elseif ($id_role == 2): ?>
-                            👨‍🎓 Akses: Ustadz Spesial
+                            👨‍🎓 Akses: Ustadz PTD Ar - Rahman (Spesial)
                         <?php endif; ?>
                     </small>
                 </div>
             </div>
             <div class="header-actions">
-                <a href="<?= base_url('/dashboard') ?>" class="btn btn-back">
-                    <i class="fas fa-arrow-left"></i> Dashboard
-                </a>
-                <form action="<?= base_url('/logout') ?>" method="post" style="display: inline;">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </form>
-            </div>
+    <a href="<?= base_url("/pelanggaran/lihat_riwayat_penghapusan/{$nis}?tahun_ajaran={$tahun_ajaran}&semester={$semester}") ?>" class="btn" style="background: #9b59b6;">
+        <i class="fas fa-history"></i> Lihat Riwayat
+    </a>
+    <a href="<?= base_url('/dashboard') ?>" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i> Kembali Ke Dashboard
+    </a>
+    <form action="<?= base_url('/logout') ?>" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </form>
+</div>
         </div>
     </div>
 </header>
 
 <!-- Main Content -->
 <main class="main-content">
+    <!-- Notifikasi -->
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> <?= session()->getFlashdata('success') ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> <?= session()->getFlashdata('error') ?>
+        </div>
+    <?php endif; ?>
+
     <!-- Form Tambah Pelanggaran -->
     <section class="form-section">
         <h2>
@@ -595,6 +648,8 @@ body.dark-mode .footer {
         <form action="<?= base_url('/pelanggaran/add_poin') ?>" method="post" id="pelanggaranForm">
             <input type="hidden" name="nis" value="<?= esc($nis ?? '') ?>">
             <input type="hidden" name="bulan" value="<?= esc($bulan ?? '') ?>">
+            <input type="hidden" name="tahun_ajaran" value="<?= esc($tahun_ajaran ?? '2025/2026') ?>">
+            <input type="hidden" name="semester" value="<?= esc($semester ?? 'ganjil') ?>">
 
             <div class="form-grid">
                 <div class="form-group">
@@ -633,7 +688,9 @@ body.dark-mode .footer {
                     <select name="kategori" id="kategori" class="form-control" required>
                         <option value="">-- Pilih Kategori --</option>
                         <option value="ringan">🟢 Ringan</option>
+                        <option value="ringan">Ringan -> Sedang</option>
                         <option value="sedang">🟡 Sedang</option>
+                        <option value="sedang">Sedang -> Berat</option>
                         <option value="berat">🔴 Berat</option>
                     </select>
                 </div>
@@ -672,7 +729,7 @@ body.dark-mode .footer {
                     </thead>
                     <tbody>
                         <?php foreach ($poinBulanan as $p): ?>
-                        <tr data-id="<?= $p['id'] ?>">
+                        <tr data-id="<?= $p['id'] ?>" data-poin="<?= $p['poin'] ?>">
                             <td><?= esc($p['bulan']) ?></td>
                             <td>
                                 <span class="badge" style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 12px;">
@@ -694,7 +751,10 @@ body.dark-mode .footer {
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-hapus" data-id="<?= $p['id'] ?>">
+                                <button class="btn btn-danger btn-hapus" 
+                                        data-id="<?= $p['id'] ?>" 
+                                        data-poin="<?= $p['poin'] ?>"
+                                        data-keterangan="<?= esc($p['keterangan']) ?>">
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </td>
@@ -707,7 +767,7 @@ body.dark-mode .footer {
             <!-- Mobile Cards -->
             <div class="mobile-cards">
                 <?php foreach ($poinBulanan as $p): ?>
-                <div class="mobile-card" data-id="<?= $p['id'] ?>">
+                <div class="mobile-card" data-id="<?= $p['id'] ?>" data-poin="<?= $p['poin'] ?>">
                     <div class="mobile-card-row">
                         <span class="mobile-card-label">Bulan</span>
                         <span class="mobile-card-value"><?= esc($p['bulan']) ?></span>
@@ -739,7 +799,10 @@ body.dark-mode .footer {
                         </span>
                     </div>
                     <div class="mobile-card-actions">
-                        <button class="btn btn-danger btn-hapus" data-id="<?= $p['id'] ?>">
+                        <button class="btn btn-danger btn-hapus" 
+                                data-id="<?= $p['id'] ?>" 
+                                data-poin="<?= $p['poin'] ?>"
+                                data-keterangan="<?= esc($p['keterangan']) ?>">
                             <i class="fas fa-trash"></i> Hapus
                         </button>
                     </div>
@@ -767,47 +830,83 @@ body.dark-mode .footer {
 <div id="deleteModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2><i class="fas fa-exclamation-triangle"></i> Konfirmasi Hapus</h2>
+            <h2><i class="fas fa-exclamation-triangle text-danger"></i> Konfirmasi Penghapusan</h2>
         </div>
-        <div class="modal-body">
-            <p>Yakin ingin menghapus poin ini?</p>
-            <p><small>Data yang dihapus tidak dapat dikembalikan</small></p>
-        </div>
-        <div class="modal-actions">
-            <button class="btn btn-danger" id="confirmDelete">
-                <i class="fas fa-trash"></i> Hapus
-            </button>
-            <button class="btn btn-back" id="cancelDelete">
-                <i class="fas fa-times"></i> Batal
-            </button>
-        </div>
+        <form action="<?= base_url('pelanggaran/delete_poin') ?>" method="post">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="delete_id">
+                <input type="hidden" name="nis" value="<?= esc($nis ?? '') ?>">
+                <input type="hidden" name="bulan" value="<?= esc($bulan ?? '') ?>">
+                <input type="hidden" name="tahun_ajaran" value="<?= esc($tahun_ajaran ?? '2025/2026') ?>">
+                <input type="hidden" name="semester" value="<?= esc($semester ?? 'ganjil') ?>">
+                <input type="hidden" name="poin_dihapus" id="delete_poin_dihapus">
+
+                <p style="margin-bottom: 20px; text-align: center; font-weight: 600;">
+                    Apakah Anda yakin ingin menghapus poin ini?
+                </p>
+
+                <div class="form-group">
+                    <label for="catatan_penghapusan" class="form-label">
+                        <i class="fas fa-sticky-note"></i> Catatan Penghapusan (Opsional)
+                    </label>
+                    <textarea class="form-control" name="catatan_penghapusan" id="catatan_penghapusan" rows="3"
+                        placeholder="Contoh: Poin dihapus karena kesalahan input, sudah diperbaiki, dll..."></textarea>
+                    <small style="color: #7f8c8d; margin-top: 5px; display: block;">
+                        Catatan ini akan disimpan di database untuk riwayat penghapusan.
+                    </small>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-back" id="cancelDelete">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Hapus Poin
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- Modal Notifikasi -->
 <div id="notifModal" class="modal">
     <div class="modal-content">
-        <div class="modal-body">
-            <p id="notifMessage" style="font-weight: 600; font-size: 1.1rem;"></p>
+        <div class="modal-body text-center">
+            <p id="notifMessage" style="font-weight: 600; font-size: 1.1rem; margin: 0;"></p>
         </div>
     </div>
 </div>
 
-<footer>&copy; <?= date('Y') ?> E - Mahkamah | Dirancang Oleh Santri PTD </footer>
-
+<!-- Bootstrap JS untuk modal functionality -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// Variabel global
 let deleteId = null;
+let deletePoin = null;
+let deleteKeterangan = null;
 
-// Ambil NIS & bulan dari server
+// Ambil data dari server
 const currentNIS = '<?= $nis ?>';
 const currentBulan = '<?= $bulan ?>';
+const currentTahunAjaran = '<?= $tahun_ajaran ?? '2025/2026' ?>';
+const currentSemester = '<?= $semester ?? 'ganjil' ?>';
 
 // === Buka Modal Hapus ===
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('btn-hapus') || e.target.closest('.btn-hapus')) {
         e.preventDefault();
         const btn = e.target.classList.contains('btn-hapus') ? e.target : e.target.closest('.btn-hapus');
+        
         deleteId = btn.dataset.id;
+        deletePoin = btn.dataset.poin;
+        deleteKeterangan = btn.dataset.keterangan;
+        
+        // Set nilai untuk form hapus
+        document.getElementById('delete_id').value = deleteId;
+        document.getElementById('delete_poin_dihapus').value = deletePoin;
+        
+        // Reset textarea catatan
+        document.getElementById('catatan_penghapusan').value = '';
         
         // Buka modal hapus
         const deleteModal = document.getElementById('deleteModal');
@@ -823,57 +922,15 @@ document.getElementById('cancelDelete')?.addEventListener('click', function() {
     if (deleteModal) {
         deleteModal.classList.remove('active');
     }
+    resetDeleteData();
 });
 
-// === Konfirmasi Hapus ===
-document.getElementById('confirmDelete')?.addEventListener('click', function() {
-    if (!deleteId) return;
-    
-    const formData = new FormData();
-    formData.append('id', deleteId);
-    formData.append('nis', currentNIS);
-    formData.append('bulan', currentBulan);
-
-    fetch(`<?= base_url('pelanggaran/delete_poin') ?>`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => {
-        if (!res.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return res.text();
-    })
-    .then(() => {
-        // Tutup modal
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) {
-            deleteModal.classList.remove('active');
-        }
-        
-        // Hapus element dari DOM (untuk desktop dan mobile)
-        const desktopRow = document.querySelector(`tr[data-id="${deleteId}"]`);
-        const mobileCard = document.querySelector(`.mobile-card[data-id="${deleteId}"]`);
-        
-        if (desktopRow) desktopRow.remove();
-        if (mobileCard) mobileCard.remove();
-        
-        // Tampilkan notifikasi
-        showNotif('✅ Poin & rekapan berhasil dihapus', true);
-        
-        // Reset deleteId
-        deleteId = null;
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) {
-            deleteModal.classList.remove('active');
-        }
-        showNotif('⚠️ Terjadi kesalahan jaringan', false);
-        deleteId = null;
-    });
-});
+// === Reset data hapus ===
+function resetDeleteData() {
+    deleteId = null;
+    deletePoin = null;
+    deleteKeterangan = null;
+}
 
 // === Tutup Modal ketika klik di luar ===
 window.addEventListener('click', function(e) {
@@ -882,6 +939,7 @@ window.addEventListener('click', function(e) {
     
     if (deleteModal && e.target === deleteModal) {
         deleteModal.classList.remove('active');
+        resetDeleteData();
     }
     if (notifModal && e.target === notifModal) {
         notifModal.classList.remove('active');
@@ -1022,13 +1080,31 @@ document.getElementById('pelanggaranForm')?.addEventListener('submit', function(
     }
 });
 
-// ==== Error Handling untuk element yang tidak ada ====
+// ==== Auto-hide alerts setelah 5 detik ====
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            alert.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+        }, 5000);
+    });
+});
+
+// ==== Debug info ====
 console.log('Script loaded successfully');
 console.log('Delete buttons found:', document.querySelectorAll('.btn-hapus').length);
 console.log('Delete modal found:', !!document.getElementById('deleteModal'));
-console.log('Confirm delete button found:', !!document.getElementById('confirmDelete'));
+console.log('Current data:', {
+    nis: currentNIS,
+    bulan: currentBulan,
+    tahun_ajaran: currentTahunAjaran,
+    semester: currentSemester
+});
 </script>
-
 
 </body>
 </html>
