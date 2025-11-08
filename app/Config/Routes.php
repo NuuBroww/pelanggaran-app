@@ -83,3 +83,10 @@ $routes->get('/admin_login', 'Admin::index');
 // ===== USER VIEW (PUBLIC) =====
 $routes->get('/user_view', 'Umum::index');
 $routes->get('/public', 'Umum::index');
+
+// ===== ROUTES EDIT PELANGGARAN =====
+$routes->get('pelanggaran/edit_poin/(:num)', 'Pelanggaran::edit_poin/$1');
+$routes->post('pelanggaran/update_poin', 'Pelanggaran::update_poin');
+$routes->get('pelanggaran/lihat_riwayat_edit/(:num)', 'Pelanggaran::lihat_riwayat_edit/$1');
+$routes->get('pelanggaran/lihat_riwayat_edit', 'Pelanggaran::lihat_riwayat_edit');
+

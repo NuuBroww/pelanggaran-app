@@ -607,6 +607,9 @@ body.dark-mode .footer {
                 </div>
             </div>
             <div class="header-actions">
+                 <a href="<?= base_url("/pelanggaran/lihat_riwayat_edit/{$nis}?tahun_ajaran={$tahun_ajaran}&semester={$semester}") ?>" class="btn" style="background: #f39c12;">
+        <i class="fas fa-edit"></i> Riwayat Edit
+    </a>
     <a href="<?= base_url("/pelanggaran/lihat_riwayat_penghapusan/{$nis}?tahun_ajaran={$tahun_ajaran}&semester={$semester}") ?>" class="btn" style="background: #9b59b6;">
         <i class="fas fa-history"></i> Lihat Riwayat
     </a>
@@ -751,13 +754,20 @@ body.dark-mode .footer {
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-danger btn-hapus" 
-                                        data-id="<?= $p['id'] ?>" 
-                                        data-poin="<?= $p['poin'] ?>"
-                                        data-keterangan="<?= esc($p['keterangan']) ?>">
-                                    <i class="fas fa-trash"></i> Hapus
-                                </button>
-                            </td>
+    <div class="d-flex gap-1 justify-content-center">
+        <button class="btn btn-warning btn-sm btn-edit" 
+                data-id="<?= $p['id'] ?>"
+                title="Edit Pelanggaran">
+            <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-danger btn-sm btn-hapus" 
+                data-id="<?= $p['id'] ?>" 
+                data-poin="<?= $p['poin'] ?>"
+                data-keterangan="<?= esc($p['keterangan']) ?>">
+            <i class="fas fa-trash"></i> Hapus
+        </button>
+    </div>
+</td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -799,13 +809,19 @@ body.dark-mode .footer {
                         </span>
                     </div>
                     <div class="mobile-card-actions">
-                        <button class="btn btn-danger btn-hapus" 
-                                data-id="<?= $p['id'] ?>" 
-                                data-poin="<?= $p['poin'] ?>"
-                                data-keterangan="<?= esc($p['keterangan']) ?>">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </div>
+    <div class="d-flex gap-2">
+        <button class="btn btn-warning btn-sm btn-edit" 
+                data-id="<?= $p['id'] ?>">
+            <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-danger btn-sm btn-hapus" 
+                data-id="<?= $p['id'] ?>" 
+                data-poin="<?= $p['poin'] ?>"
+                data-keterangan="<?= esc($p['keterangan']) ?>">
+            <i class="fas fa-trash"></i> Hapus
+        </button>
+    </div>
+</div>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -1103,6 +1119,20 @@ console.log('Current data:', {
     bulan: currentBulan,
     tahun_ajaran: currentTahunAjaran,
     semester: currentSemester
+});
+
+// === Buka Modal Edit ===
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('btn-edit') || e.target.closest('.btn-edit')) {
+        e.preventDefault();
+        const btn = e.target.classList.contains('btn-edit') ? e.target : e.target.closest('.btn-edit');
+        const id = btn.dataset.id;
+        
+        // Redirect ke halaman edit
+        const tahun_ajaran = '<?= $tahun_ajaran ?? "2025/2026" ?>';
+        const semester = '<?= $semester ?? "ganjil" ?>';
+        window.location.href = `<?= base_url('pelanggaran/edit_poin/') ?>${id}?tahun_ajaran=${tahun_ajaran}&semester=${semester}`;
+    }
 });
 </script>
 

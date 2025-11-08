@@ -11,19 +11,22 @@ date_default_timezone_set('Asia/Jakarta');
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --primary: #667eea;
-            --primary-dark: #5a6fd8;
-            --secondary: #764ba2;
-            --accent: #f093fb;
-            --text-dark: #2c3e50;
-            --text-light: #7f8c8d;
-            --bg-light: #f8f9fa;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #34d399;
+            --accent: #6ee7b7;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
             --bg-white: #ffffff;
-            --border: #e9ecef;
-            --shadow: 0 20px 50px rgba(0,0,0,0.1);
-            --shadow-hover: 0 25px 60px rgba(0,0,0,0.15);
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-dark: linear-gradient(135deg, #5a6fd8 0%, #6a4b8c 100%);
+            --border: #d1d5db;
+            --shadow: 0 20px 50px rgba(16, 185, 129, 0.1);
+            --shadow-hover: 0 25px 60px rgba(16, 185, 129, 0.15);
+            --gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            --gradient-dark: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
         }
 
         * {
@@ -54,14 +57,59 @@ date_default_timezone_set('Asia/Jakarta');
             opacity: 0.1;
             background: 
                 radial-gradient(circle at 20% 80%, var(--accent) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, #667eea 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, #764ba2 0%, transparent 50%);
+                radial-gradient(circle at 80% 20%, #10b981 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, #34d399 0%, transparent 50%);
             animation: float 20s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatElement 15s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 70%;
+            left: 80%;
+            animation-delay: -5s;
+        }
+
+        .floating-element:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 50%;
+            left: 5%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
         }
 
         /* Login Container */
@@ -75,7 +123,7 @@ date_default_timezone_set('Asia/Jakarta');
             box-shadow: var(--shadow);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 2;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
         }
 
@@ -90,27 +138,33 @@ date_default_timezone_set('Asia/Jakarta');
             margin-bottom: 40px;
         }
 
-        /* Logo Container - PERSEGI PANJANG */
+        /* Logo Container */
         .logo-container {
-            width: 180px;  /* Lebar diperbesar */
-            height: 80px;  /* Tinggi tetap */
+            width: 180px;
+            height: 80px;
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
             border: 3px solid var(--bg-white);
             overflow: hidden;
             background: var(--bg-white);
             position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .logo-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.3);
         }
 
         .logo-img {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Biar logo proporsional */
-            border-radius: 8px;
+            object-fit: contain;
+            border-radius: 12px;
             padding: 8px;
         }
 
@@ -118,7 +172,7 @@ date_default_timezone_set('Asia/Jakarta');
             width: 100%;
             height: 100%;
             background: var(--gradient);
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -185,12 +239,12 @@ date_default_timezone_set('Asia/Jakarta');
         .input-field:focus {
             border-color: var(--primary);
             background: var(--bg-white);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
             transform: translateY(-2px);
         }
 
         .input-field::placeholder {
-            color: #adb5bd;
+            color: #9ca3af;
             font-weight: 400;
         }
 
@@ -210,10 +264,12 @@ date_default_timezone_set('Asia/Jakarta');
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 6px;
         }
 
         .toggle-password:hover {
             color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
             transform: scale(1.1);
         }
 
@@ -230,7 +286,7 @@ date_default_timezone_set('Asia/Jakarta');
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -242,7 +298,7 @@ date_default_timezone_set('Asia/Jakarta');
         .login-btn:hover {
             background: var(--gradient-dark);
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
         }
 
         .login-btn:active {
@@ -264,21 +320,42 @@ date_default_timezone_set('Asia/Jakarta');
             left: 100%;
         }
 
-        /* Message */
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Message Styles */
         .message {
             text-align: center;
-            color: #e74c3c;
-            font-size: 15px;
-            margin-bottom: 20px;
             padding: 14px;
-            background: #fee;
             border-radius: 12px;
-            border: 1px solid #fadbd8;
+            margin-bottom: 20px;
             font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            border: 1px solid;
+        }
+
+        .message.error {
+            color: var(--error);
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .message.success {
+            color: var(--success);
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .message.warning {
+            color: var(--warning);
+            background: #fffbeb;
+            border-color: #fed7aa;
         }
 
         /* Back Link */
@@ -298,11 +375,11 @@ date_default_timezone_set('Asia/Jakarta');
             padding: 10px 16px;
             border-radius: 10px;
             transition: all 0.3s ease;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(16, 185, 129, 0.1);
         }
 
         .back-link a:hover {
-            background: rgba(102, 126, 234, 0.2);
+            background: rgba(16, 185, 129, 0.2);
             transform: translateY(-2px);
         }
 
@@ -346,6 +423,23 @@ date_default_timezone_set('Asia/Jakarta');
             100% { transform: rotate(360deg); }
         }
 
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
         /* Responsive Design */
         @media (max-width: 480px) {
             body {
@@ -360,7 +454,6 @@ date_default_timezone_set('Asia/Jakarta');
                 border-radius: 20px;
             }
 
-            /* Logo mobile */
             .logo-container {
                 width: 160px;
                 height: 70px;
@@ -427,20 +520,50 @@ date_default_timezone_set('Asia/Jakarta');
             outline-offset: 2px;
         }
 
+        .toggle-password:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
         /* Reduced motion for accessibility */
         @media (prefers-reduced-motion: reduce) {
             .bg-animation,
+            .floating-element,
             .login-container,
             .input-field,
-            .login-btn {
+            .login-btn,
+            .logo-container {
                 animation: none;
                 transition: none;
             }
         }
+
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+            display: none;
+        }
+
+        .strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .strength-weak { background: #ef4444; width: 33%; }
+        .strength-medium { background: #f59e0b; width: 66%; }
+        .strength-strong { background: #10b981; width: 100%; }
     </style>
 </head>
 <body>
     <div class="bg-animation"></div>
+    <div class="floating-elements">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+    </div>
     
     <div class="login-container">
         <!-- Header dengan Logo -->
@@ -454,7 +577,11 @@ date_default_timezone_set('Asia/Jakarta');
                 <?php if ($logoFound): ?>
                     <img src="<?= base_url('assets/img/logo.png') ?>" 
                          alt="Logo E-Mahkamah" 
-                         class="logo-img">
+                         class="logo-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="logo-placeholder" style="display: none;">
+                        🏛️ E-Mahkamah
+                    </div>
                 <?php else: ?>
                     <div class="logo-placeholder">
                         🏛️ E-Mahkamah
@@ -466,9 +593,16 @@ date_default_timezone_set('Asia/Jakarta');
         </div>
 
         <?php if(session()->getFlashdata('msg')): ?>
-            <div class="message">
+            <div class="message error">
                 <i class="fas fa-exclamation-circle"></i> 
                 <?= session()->getFlashdata('msg') ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if(session()->getFlashdata('success')): ?>
+            <div class="message success">
+                <i class="fas fa-check-circle"></i> 
+                <?= session()->getFlashdata('success') ?>
             </div>
         <?php endif; ?>
 
@@ -484,7 +618,9 @@ date_default_timezone_set('Asia/Jakarta');
                        class="input-field" 
                        placeholder="Masukkan username..." 
                        required 
-                       autocomplete="username">
+                       autocomplete="username"
+                       minlength="3"
+                       maxlength="50">
             </div>
 
             <div class="input-group">
@@ -498,16 +634,29 @@ date_default_timezone_set('Asia/Jakarta');
                        class="input-field" 
                        placeholder="Masukkan password..." 
                        required 
-                       autocomplete="current-password">
+                       autocomplete="current-password"
+                       minlength="6"
+                       maxlength="100">
                 <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
                     <i class="fas fa-eye" id="eyeIcon"></i>
                 </button>
+                
+                <!-- Password Strength Indicator -->
+                <div class="password-strength" id="passwordStrength">
+                    <div>Kekuatan password: <span id="strengthText">-</span></div>
+                    <div class="strength-bar" id="strengthBar"></div>
+                </div>
             </div>
 
             <button type="submit" class="login-btn" id="loginBtn">
                 <i class="fas fa-sign-in-alt"></i>
                 <span>Masuk ke Sistem</span>
             </button>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
@@ -530,6 +679,7 @@ date_default_timezone_set('Asia/Jakarta');
     </div>
 
     <script>
+        // Password visibility toggle
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -545,32 +695,134 @@ date_default_timezone_set('Asia/Jakarta');
             }
         }
 
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            const passwordStrength = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                passwordStrength.style.display = 'none';
+                return;
+            }
+            
+            passwordStrength.style.display = 'block';
+
+            // Length check
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            
+            // Character variety checks
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            // Update UI
+            strengthBar.className = 'strength-bar';
+            if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = 'Lemah';
+                strengthText.style.color = '#ef4444';
+            } else if (strength <= 4) {
+                strengthBar.classList.add('strength-medium');
+                strengthText.textContent = 'Sedang';
+                strengthText.style.color = '#f59e0b';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = 'Kuat';
+                strengthText.style.color = '#10b981';
+            }
+        }
+
         // Form submission dengan loading state
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const loginBtn = document.getElementById('loginBtn');
             const loading = document.getElementById('loading');
+            const progressFill = document.getElementById('progressFill');
             
-            // Validasi cepat
+            // Validasi form
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             
             if (!username || !password) {
                 e.preventDefault();
+                showMessage('Harap isi semua field!', 'error');
+                return;
+            }
+
+            if (username.length < 3) {
+                e.preventDefault();
+                showMessage('Username minimal 3 karakter!', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                e.preventDefault();
+                showMessage('Password minimal 6 karakter!', 'error');
                 return;
             }
             
             // Tampilkan loading
-            loginBtn.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
             loading.style.display = 'flex';
+            
+            // Animate progress bar
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 5;
+                progressFill.style.width = progress + '%';
+                if (progress >= 90) clearInterval(progressInterval);
+            }, 100);
             
             // Safety timeout
             setTimeout(() => {
                 if (loading.style.display === 'flex') {
-                    loginBtn.style.display = 'flex';
-                    loading.style.display = 'none';
+                    resetFormState();
+                    showMessage('Timeout: Silakan coba lagi', 'error');
                 }
-            }, 8000);
+            }, 10000);
         });
+
+        function resetFormState() {
+            const loginBtn = document.getElementById('loginBtn');
+            const loading = document.getElementById('loading');
+            const progressFill = document.getElementById('progressFill');
+            
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Masuk ke Sistem</span>';
+            loading.style.display = 'none';
+            progressFill.style.width = '0%';
+        }
+
+        function showMessage(message, type) {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+                ${message}
+            `;
+            
+            // Insert after header
+            const header = document.querySelector('.login-header');
+            header.parentNode.insertBefore(messageDiv, header.nextSibling);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.style.opacity = '0';
+                    messageDiv.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => messageDiv.remove(), 500);
+                }
+            }, 5000);
+        }
 
         // Enhanced focus management
         document.addEventListener('DOMContentLoaded', function() {
@@ -590,8 +842,15 @@ date_default_timezone_set('Asia/Jakarta');
                 input.addEventListener('input', function() {
                     if (this.value.trim() !== '') {
                         this.style.background = 'var(--bg-white)';
+                        this.style.borderColor = 'var(--primary)';
                     } else {
                         this.style.background = 'var(--bg-light)';
+                        this.style.borderColor = 'var(--border)';
+                    }
+                    
+                    // Password strength check
+                    if (this.id === 'password') {
+                        checkPasswordStrength(this.value);
                     }
                 });
             });
@@ -617,9 +876,26 @@ date_default_timezone_set('Asia/Jakarta');
             if (e.key === 'Escape') {
                 document.activeElement?.blur();
             }
+            
+            // Enter to submit form when both fields are filled
+            if (e.key === 'Enter' && e.target.type !== 'textarea') {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                if (username && password) {
+                    document.getElementById('loginForm').requestSubmit();
+                }
+            }
         });
 
-        console.log('🔄 Login page loaded successfully');
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                // Reset form state when user returns to tab
+                resetFormState();
+            }
+        });
+
+        console.log('✅ Login page loaded successfully - Hijau Muda Theme');
     </script>
 </body>
 </html>

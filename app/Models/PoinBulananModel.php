@@ -52,6 +52,19 @@ public function afterInsert($data)
         
         return true;
     }
+
+    public function getPelanggaranById($id)
+    {
+        return $this->where('id', $id)->first();
+    }
+
+    /**
+     * Update data pelanggaran
+     */
+    public function updatePelanggaran($id, $data)
+    {
+        return $this->update($id, $data);
+    }
 }
     
 
