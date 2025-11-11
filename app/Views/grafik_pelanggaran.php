@@ -777,10 +777,10 @@
             <div class="modal-body">
                 <div class="semester-info">
                     <span class="semester-badge semester-ganjil">
-                        <i class="fas fa-sun"></i> Semester Ganjil: Juli - Desember
+                        <i class="fas fa-snowflake"></i>Semester Genap: Januari - Juni
                     </span>
                     <span class="semester-badge semester-genap">
-                        <i class="fas fa-snowflake"></i> Semester Genap: Januari - Juni
+                        <i class="fas fa-sun"></i> Semester Ganjil: Juli - Desember 
                     </span>
                 </div>
 

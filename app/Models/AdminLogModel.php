@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class AdminLogModel extends Model
 {
-    protected $table = 'admin_logs';
+    protected $table = 'admin_log';
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'admin_id', 

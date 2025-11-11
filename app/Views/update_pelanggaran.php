@@ -611,7 +611,7 @@ body.dark-mode .footer {
         <i class="fas fa-edit"></i> Riwayat Edit
     </a>
     <a href="<?= base_url("/pelanggaran/lihat_riwayat_penghapusan/{$nis}?tahun_ajaran={$tahun_ajaran}&semester={$semester}") ?>" class="btn" style="background: #9b59b6;">
-        <i class="fas fa-history"></i> Lihat Riwayat
+        <i class="fas fa-history"></i> Riwayat Hapus
     </a>
     <a href="<?= base_url('/dashboard') ?>" class="btn btn-back">
         <i class="fas fa-arrow-left"></i> Kembali Ke Dashboard
@@ -1077,25 +1077,32 @@ function showNotif(message, success = true) {
 
 // ==== Handle Form Submission ====
 document.getElementById('pelanggaranForm')?.addEventListener('submit', function(e) {
-    // Validasi tambahan bisa ditambah di sini
     const jenis = document.getElementById('jenis')?.value;
     const detail = document.getElementById('detail')?.value;
     const poin = document.getElementById('poin')?.value;
     const kategori = document.getElementById('kategori')?.value;
     
-    if (!jenis || !detail) {
+    // Validasi client-side
+    let errors = [];
+    
+    if (!jenis) errors.push('Jenis pelanggaran harus dipilih');
+    if (!detail || detail.trim() === '') errors.push('Detail pelanggaran harus diisi');
+    if (!poin || poin < 1 || poin > 100) errors.push('Poin harus antara 1-100');
+    if (!kategori) errors.push('Kategori harus dipilih');
+    
+    if (errors.length > 0) {
         e.preventDefault();
-        showNotif('⚠️ Harap isi semua field yang required', false);
+        showNotif('⚠️ ' + errors.join(', '), false);
         return;
     }
     
-    if (poin && (poin < 1 || poin > 100)) {
-        e.preventDefault();
-        showNotif('⚠️ Poin harus antara 1-100', false);
-        return;
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+        submitBtn.disabled = true;
     }
 });
-
 // ==== Auto-hide alerts setelah 5 detik ====
 document.addEventListener('DOMContentLoaded', function() {
     const alerts = document.querySelectorAll('.alert');

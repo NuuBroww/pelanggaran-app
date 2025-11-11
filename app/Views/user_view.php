@@ -902,6 +902,188 @@ html {
     background: rgba(59, 130, 246, 0.2);
     color: var(--dark);
 }
+/* ===== FOTO MODAL & ZOOM STYLES ===== */
+.foto-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.foto-modal .modal-content {
+    background: transparent;
+    max-width: 95vw;
+    max-height: 95vh;
+    width: auto;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+.foto-full {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+}
+
+.foto-full.zoomed {
+    cursor: zoom-out;
+    transform: scale(1.8);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+
+.foto-info {
+    margin-top: 20px;
+    color: white;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.foto-info h4 {
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.foto-info p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.foto-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 2001;
+}
+
+.foto-control-btn {
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.foto-control-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+}
+
+.foto-close-btn {
+    background: rgba(231, 76, 60, 0.8);
+    border-color: rgba(231, 76, 60, 0.5);
+}
+
+.foto-close-btn:hover {
+    background: rgba(231, 76, 60, 0.9);
+}
+
+/* Loading untuk foto */
+.foto-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    gap: 15px;
+}
+
+.foto-loading-spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+/* Animasi untuk foto */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.foto-full {
+    animation: fadeInScale 0.4s ease;
+}
+
+/* Responsive untuk mobile */
+@media (max-width: 768px) {
+    .foto-modal {
+        padding: 10px;
+    }
+    
+    .foto-full {
+        max-height: 75vh;
+    }
+    
+    .foto-full.zoomed {
+        transform: scale(1.5);
+    }
+    
+    .foto-controls {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .foto-control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+    
+    .foto-info h4 {
+        font-size: 1.1rem;
+    }
+    
+    .foto-info p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .foto-full.zoomed {
+        transform: scale(1.3);
+    }
+    
+    .foto-control-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+}
 </style>
 </head>
 <body>
@@ -1032,28 +1214,34 @@ html {
                     ?>
                     <div class="santri-card" data-nis="<?= $nis ?>" data-nama="<?= esc($row['nama_santri']) ?>">
                         <div class="card-header">
-                            <div class="photo-container">
-                                <?php if ($hasPhoto): 
-                                    $photoPath = base_url('uploads/foto_santri/' . $fotoFileName);
-                                ?>
-                                    <img src="<?= $photoPath ?>" 
-                                         alt="<?= esc($row['nama_santri']) ?>" 
-                                         class="santri-photo"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="photo-placeholder" style="display: none;">
-                                        <?= $initial ?>
-                                    </div>
-                                <?php else: ?>
-                                    <div class="photo-placeholder">
-                                        <?= $initial ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="card-info">
-                                <h3><?= esc($row['nama_santri']) ?></h3>
-                                <div class="card-nis">NIS: <?= esc($row['nis']) ?></div>
-                            </div>
-                        </div>
+    <div class="photo-container">
+        <?php if ($hasPhoto): 
+            $photoPath = base_url('uploads/foto_santri/' . $fotoFileName);
+        ?>
+            <img src="<?= $photoPath ?>" 
+                 alt="<?= esc($row['nama_santri']) ?>" 
+                 class="santri-photo"
+                 data-nama="<?= esc($row['nama_santri']) ?>"
+                 data-nis="<?= esc($row['nis']) ?>"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="photo-placeholder" style="display: none;"
+                 data-nama="<?= esc($row['nama_santri']) ?>"
+                 data-nis="<?= esc($row['nis']) ?>">
+                <?= $initial ?>
+            </div>
+        <?php else: ?>
+            <div class="photo-placeholder"
+                 data-nama="<?= esc($row['nama_santri']) ?>"
+                 data-nis="<?= esc($row['nis']) ?>">
+                <?= $initial ?>
+            </div>
+        <?php endif; ?>
+    </div>
+    <div class="card-info">
+        <h3><?= esc($row['nama_santri']) ?></h3>
+        <div class="card-nis">NIS: <?= esc($row['nis']) ?></div>
+    </div>
+</div>
 
                         <!-- Stats Grid -->
                         <div class="stats-grid">
@@ -1441,6 +1629,296 @@ html {
     }
 
     console.log('JavaScript loaded successfully');
+    // ===== FOTO MODAL & ZOOM FUNCTIONALITY =====
+let isFotoZoomed = false;
+
+function tampilkanFoto(photoPath, nama, nis) {
+    console.log('🖼️ Membuka foto:', nama, 'Path:', photoPath);
+    
+    const modal = document.getElementById('fotoModal');
+    const fotoFull = document.getElementById('fotoFull');
+    const fotoLoading = document.getElementById('fotoLoading');
+    const zoomBtn = document.getElementById('zoomBtn');
+    
+    // Reset state
+    isFotoZoomed = false;
+    fotoFull.classList.remove('zoomed');
+    zoomBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+    
+    // Set info
+    document.getElementById('fotoSantriName').textContent = nama;
+    document.getElementById('fotoSantriNis').textContent = 'NIS: ' + nis;
+    
+    // Tampilkan modal dan loading
+    modal.style.display = 'flex';
+    fotoLoading.style.display = 'flex';
+    fotoFull.style.display = 'none';
+    
+    // Preload image
+    const img = new Image();
+    img.onload = function() {
+        console.log('✅ Foto berhasil dimuat');
+        fotoFull.src = photoPath;
+        fotoLoading.style.display = 'none';
+        fotoFull.style.display = 'block';
+        
+        // Add animation
+        fotoFull.style.animation = 'fadeInScale 0.4s ease';
+    };
+    
+    img.onerror = function() {
+        console.error('❌ Gagal memuat foto');
+        fotoLoading.innerHTML = `
+            <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+            <p>Gagal memuat foto</p>
+            <button class="btn" onclick="tutupFotoModal()" style="margin-top: 10px;">
+                <i class="fas fa-times"></i> Tutup
+            </button>
+        `;
+    };
+    
+    img.src = photoPath;
+}
+
+function tutupFotoModal() {
+    document.getElementById('fotoModal').style.display = 'none';
+    isFotoZoomed = false;
+    
+    // Reset zoom state untuk next open
+    const fotoFull = document.getElementById('fotoFull');
+    fotoFull.classList.remove('zoomed');
+    document.getElementById('zoomBtn').innerHTML = '<i class="fas fa-search-plus"></i>';
+}
+
+function toggleZoom() {
+    const fotoFull = document.getElementById('fotoFull');
+    const zoomBtn = document.getElementById('zoomBtn');
+    
+    isFotoZoomed = !isFotoZoomed;
+    fotoFull.classList.toggle('zoomed', isFotoZoomed);
+    
+    // Update zoom button icon
+    if (isFotoZoomed) {
+        zoomBtn.innerHTML = '<i class="fas fa-search-minus"></i>';
+        zoomBtn.title = 'Zoom Out';
+    } else {
+        zoomBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+        zoomBtn.title = 'Zoom In';
+    }
+}
+
+function zoomFoto() {
+    toggleZoom();
+}
+
+// Update photo container di card untuk support click
+function updatePhotoContainers() {
+    const photoContainers = document.querySelectorAll('.photo-container');
+    
+    photoContainers.forEach(container => {
+        const img = container.querySelector('.santri-photo');
+        const placeholder = container.querySelector('.photo-placeholder');
+        const card = container.closest('.santri-card');
+        const nama = card.querySelector('.card-info h3')?.textContent || '';
+        const nis = card.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
+        
+        if (img && img.src && !img.src.includes('undefined')) {
+            // Image exists and loaded successfully
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() {
+                tampilkanFoto(this.src, nama, nis);
+            });
+        }
+        
+        if (placeholder) {
+            placeholder.style.cursor = 'pointer';
+            placeholder.addEventListener('click', function() {
+                // Jika ada image tapi error, coba pakai image source
+                const imgSrc = container.querySelector('.santri-photo')?.src;
+                if (imgSrc && !imgSrc.includes('undefined')) {
+                    tampilkanFoto(imgSrc, nama, nis);
+                } else {
+                    // Tampilkan placeholder saja
+                    alert('Foto tidak tersedia untuk ' + nama);
+                }
+            });
+        }
+    });
+}
+
+// ===== ENHANCED CARD PHOTO INTERACTION =====
+function enhanceCardPhotos() {
+    const cards = document.querySelectorAll('.santri-card');
+    
+    cards.forEach(card => {
+        const photoContainer = card.querySelector('.photo-container');
+        const img = photoContainer?.querySelector('.santri-photo');
+        const placeholder = photoContainer?.querySelector('.photo-placeholder');
+        const nama = card.querySelector('.card-info h3')?.textContent || '';
+        const nis = card.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
+        
+        // Add hover effects
+        if (img) {
+            img.style.transition = 'all 0.3s ease';
+            img.parentElement.style.transition = 'all 0.3s ease';
+            
+            img.parentElement.addEventListener('mouseenter', function() {
+                if (img.style.display !== 'none') {
+                    img.style.transform = 'scale(1.05)';
+                    img.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.25)';
+                }
+            });
+            
+            img.parentElement.addEventListener('mouseleave', function() {
+                if (img.style.display !== 'none') {
+                    img.style.transform = 'scale(1)';
+                    img.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                }
+            });
+        }
+        
+        if (placeholder) {
+            placeholder.style.transition = 'all 0.3s ease';
+            
+            placeholder.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.25)';
+            });
+            
+            placeholder.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+            });
+        }
+    });
+}
+
+// ===== EVENT LISTENERS FOR FOTO MODAL =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize photo functionality
+    updatePhotoContainers();
+    enhanceCardPhotos();
+    
+    // Close modal when clicking outside image
+    document.getElementById('fotoModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            tutupFotoModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('fotoModal').style.display === 'flex') {
+            tutupFotoModal();
+        }
+    });
+    
+    // Handle image errors and retry
+    const images = document.querySelectorAll('.santri-photo');
+    images.forEach(img => {
+        img.addEventListener('error', function() {
+            console.warn('❌ Gambar gagal dimuat:', this.src);
+            this.style.display = 'none';
+            const placeholder = this.nextElementSibling;
+            if (placeholder && placeholder.classList.contains('photo-placeholder')) {
+                placeholder.style.display = 'flex';
+                
+                // Update click handler untuk placeholder
+                const card = this.closest('.santri-card');
+                const nama = card?.querySelector('.card-info h3')?.textContent || '';
+                const nis = card?.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
+                
+                placeholder.onclick = function() {
+                    // Coba load image lagi
+                    const imgSrc = img.src;
+                    if (imgSrc && !imgSrc.includes('undefined')) {
+                        // Buat cache busting URL
+                        const cacheBustUrl = imgSrc + (imgSrc.includes('?') ? '&' : '?') + 't=' + Date.now();
+                        const testImg = new Image();
+                        
+                        testImg.onload = function() {
+                            tampilkanFoto(cacheBustUrl, nama, nis);
+                        };
+                        
+                        testImg.onerror = function() {
+                            alert('Foto tidak dapat dimuat untuk ' + nama);
+                        };
+                        
+                        testImg.src = cacheBustUrl;
+                    } else {
+                        alert('Foto tidak tersedia untuk ' + nama);
+                    }
+                };
+            }
+        });
+        
+        // Add click handler for successful images
+        img.addEventListener('load', function() {
+            console.log('✅ Gambar berhasil dimuat:', this.src);
+            const card = this.closest('.santri-card');
+            const nama = card?.querySelector('.card-info h3')?.textContent || '';
+            const nis = card?.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
+            
+            this.onclick = function() {
+                tampilkanFoto(this.src, nama, nis);
+            };
+        });
+    });
+});
+
+// ===== SWIPE SUPPORT FOR MOBILE =====
+let startX = 0;
+let currentX = 0;
+
+document.getElementById('fotoFull').addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+});
+
+document.getElementById('fotoFull').addEventListener('touchmove', function(e) {
+    if (!isFotoZoomed) {
+        currentX = e.touches[0].clientX;
+    }
+});
+
+document.getElementById('fotoFull').addEventListener('touchend', function(e) {
+    if (!isFotoZoomed) {
+        const diff = startX - currentX;
+        if (Math.abs(diff) > 50) { // Minimum swipe distance
+            if (diff > 0) {
+                // Swipe left - close modal
+                tutupFotoModal();
+            }
+            // You can add more swipe directions here if needed
+        }
+    }
+});
+
+console.log('🖼️ Foto zoom functionality loaded');
     </script>
+    <!-- Modal Foto dengan Zoom -->
+<div id="fotoModal" class="modal foto-modal">
+    <div class="modal-content">
+        <div class="foto-controls">
+            <button class="foto-control-btn" onclick="zoomFoto()" id="zoomBtn" title="Zoom In/Out">
+                <i class="fas fa-search-plus"></i>
+            </button>
+            <button class="foto-control-btn foto-close-btn" onclick="tutupFotoModal()" title="Tutup">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="modal-body" style="text-align: center; padding: 0; display: flex; flex-direction: column; align-items: center;">
+            <div id="fotoLoading" class="foto-loading" style="display: none;">
+                <div class="foto-loading-spinner"></div>
+                <p>Memuat foto...</p>
+            </div>
+            <img id="fotoFull" class="foto-full" src="" alt="Foto Santri" style="display: none;" onclick="toggleZoom()">
+            <div class="foto-info">
+                <h4 id="fotoSantriName"></h4>
+                <p id="fotoSantriNis"></p>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

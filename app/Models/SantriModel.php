@@ -30,4 +30,10 @@ class SantriModel extends Model
         }
         return $this->update($nis, $updateData);
     }
+
+    // Di SantriModel, tambahkan method ini:
+public function updateTotalPoin($nis, $totalPoin)
+{
+    return $this->where('nis', $nis)->set(['total_poin' => $totalPoin])->update();
+}
 }

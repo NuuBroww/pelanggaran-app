@@ -25,9 +25,9 @@ class RekapanModel extends Model
     }
 
     /**
-     * Generate rekapan berdasarkan tahun ajaran dan semester
-     */
-    public function generateRekapan($tahun_ajaran = null, $semester = null)
+ * Generate rekapan berdasarkan tahun ajaran dan semester
+ */
+public function generateRekapan($tahun_ajaran = null, $semester = null)
 {
     if (!$tahun_ajaran) {
         $tahun_ajaran = $this->getCurrentTahunAjaran();
@@ -36,162 +36,189 @@ class RekapanModel extends Model
         $semester = $this->getCurrentSemester();
     }
 
+    log_message('debug', '=== START GENERATE REKAPAN ===');
     log_message('debug', 'Generating rekapan for: ' . $tahun_ajaran . ' - ' . $semester);
 
-    // **CEK KOLOM YANG ADA DI TABEL**
-    $db = \Config\Database::connect();
-    $hasStatusColumn = $db->fieldExists('status', 'santri');
-    $hasTahunAjaranInPoin = $db->fieldExists('tahun_ajaran', 'poin_bulanan');
-    $hasSemesterInPoin = $db->fieldExists('semester', 'poin_bulanan');
-    
-    log_message('debug', 'Tahun ajaran di poin_bulanan: ' . ($hasTahunAjaranInPoin ? 'ADA' : 'TIDAK ADA'));
-    log_message('debug', 'Semester di poin_bulanan: ' . ($hasSemesterInPoin ? 'ADA' : 'TIDAK ADA'));
+    try {
+        // **CEK KOLOM YANG ADA DI TABEL**
+        $db = \Config\Database::connect();
+        $hasTahunAjaranInPoin = $db->fieldExists('tahun_ajaran', 'poin_bulanan');
+        $hasSemesterInPoin = $db->fieldExists('semester', 'poin_bulanan');
+        
+        log_message('debug', 'Tahun ajaran di poin_bulanan: ' . ($hasTahunAjaranInPoin ? 'ADA' : 'TIDAK ADA'));
+        log_message('debug', 'Semester di poin_bulanan: ' . ($hasSemesterInPoin ? 'ADA' : 'TIDAK ADA'));
 
-    // **QUERY SANTRI - TANPA KOLOM STATUS**
-    if ($hasStatusColumn) {
-        $santriQuery = $this->db->query("
-            SELECT nis, nama_santri 
-            FROM santri 
-            WHERE status = 'aktif' OR status IS NULL OR status = ''
-        ");
-    } else {
-        // **JIKA KOLOM STATUS TIDAK ADA, AMBIL SEMUA SANTRI**
-        $santriQuery = $this->db->query("
-            SELECT nis, nama_santri 
-            FROM santri 
-        ");
-    }
-    
-    $allSantri = $santriQuery->getResultArray();
+        // **AMBIL SEMUA SANTRI**
+        $santriQuery = $this->db->query("SELECT nis, nama_santri FROM santri");
+        $allSantri = $santriQuery->getResultArray();
 
-    log_message('debug', 'Total santri found: ' . count($allSantri));
+        log_message('debug', 'Total santri found: ' . count($allSantri));
 
-    if (empty($allSantri)) {
-        log_message('error', 'Tidak ada santri ditemukan!');
+        if (empty($allSantri)) {
+            log_message('error', 'Tidak ada santri ditemukan!');
+            return false;
+        }
+
+        $successCount = 0;
+        $errorCount = 0;
+
+        foreach ($allSantri as $santri) {
+            $nis = $santri['nis'];
+            
+            log_message('debug', 'Processing santri: ' . $nis . ' - ' . $santri['nama_santri']);
+
+            try {
+                // **QUERY TOTAL POIN - SESUAIKAN DENGAN KOLOM YANG ADA**
+                if ($hasTahunAjaranInPoin && $hasSemesterInPoin) {
+                    // Jika kolom tahun_ajaran dan semester ada
+                    $totalPoinQuery = $this->db->query("
+                        SELECT nis, SUM(poin) AS total_poin
+                        FROM poin_bulanan 
+                        WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
+                        GROUP BY nis
+                    ", [$nis, $tahun_ajaran, $semester]);
+                } else {
+                    // **JIKA KOLOM TIDAK ADA, AMBIL SEMUA POIN**
+                    $totalPoinQuery = $this->db->query("
+                        SELECT nis, SUM(poin) AS total_poin
+                        FROM poin_bulanan 
+                        WHERE nis = ?
+                        GROUP BY nis
+                    ", [$nis]);
+                }
+                
+                $totalRow = $totalPoinQuery->getRow();
+                $total_poin = $totalRow ? (int)$totalRow->total_poin : 0;
+
+                log_message('debug', 'Santri ' . $nis . ' total poin: ' . $total_poin);
+
+                // **AMBIL DATA PELANGGARAN**
+                if ($hasTahunAjaranInPoin && $hasSemesterInPoin) {
+                    $pelanggaranQuery = $this->db->query("
+                        SELECT keterangan, poin, bulan, tanggal
+                        FROM poin_bulanan
+                        WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
+                        ORDER BY tanggal DESC
+                    ", [$nis, $tahun_ajaran, $semester]);
+                } else {
+                    $pelanggaranQuery = $this->db->query("
+                        SELECT keterangan, poin, bulan, tanggal
+                        FROM poin_bulanan
+                        WHERE nis = ?
+                        ORDER BY tanggal DESC
+                    ", [$nis]);
+                }
+                
+                $pelanggaranData = $pelanggaranQuery->getResultArray();
+                
+                // Format seluruh pelanggaran
+                $seluruh_pelanggaran = '-';
+                if (!empty($pelanggaranData)) {
+                    $pelanggaranList = [];
+                    foreach ($pelanggaranData as $p) {
+                        $pelanggaranList[] = "{$p['keterangan']} ({$p['poin']} poin) - {$p['bulan']}";
+                    }
+                    $seluruh_pelanggaran = implode('; ', $pelanggaranList);
+                }
+
+                // **CARI BULAN TERBANYAK**
+                if ($hasTahunAjaranInPoin && $hasSemesterInPoin) {
+                    $bulanQuery = $this->db->query("
+                        SELECT bulan, SUM(poin) AS total_bulan
+                        FROM poin_bulanan
+                        WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
+                        GROUP BY bulan
+                        ORDER BY total_bulan DESC
+                        LIMIT 1
+                    ", [$nis, $tahun_ajaran, $semester]);
+                } else {
+                    $bulanQuery = $this->db->query("
+                        SELECT bulan, SUM(poin) AS total_bulan
+                        FROM poin_bulanan
+                        WHERE nis = ?
+                        GROUP BY bulan
+                        ORDER BY total_bulan DESC
+                        LIMIT 1
+                    ", [$nis]);
+                }
+                
+                $bulan = $bulanQuery->getRow();
+                $bulan_terbanyak = $bulan ? $bulan->bulan : '-';
+
+                // **TENTUKAN SP LEVEL**
+                $sp_level = $this->determineSPLevel($total_poin);
+
+                // **CEK APAKAH SUDAH ADA DI REKAPAN - PERBAIKI QUERY INI**
+                $existingQuery = $this->db->query("
+                    SELECT id_rekap 
+                    FROM rekapan 
+                    WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
+                ", [$nis, $tahun_ajaran, $semester]);
+                
+                $existing = $existingQuery->getRow();
+
+                if ($existing) {
+                    // ✅ PERBAIKAN: Gunakan query builder untuk update
+                    $updateData = [
+                        'total_poin' => $total_poin,
+                        'seluruh_pelanggaran' => $seluruh_pelanggaran,
+                        'bulan_terbanyak' => $bulan_terbanyak,
+                        'sp_level' => $sp_level,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                    
+                    $updateResult = $this->db->table('rekapan')
+                        ->where('id_rekap', $existing->id_rekap)
+                        ->update($updateData);
+                        
+                    if ($updateResult) {
+                        log_message('debug', '✅ Updated rekapan for: ' . $nis);
+                        $successCount++;
+                    } else {
+                        log_message('error', '❌ Failed to update rekapan for: ' . $nis);
+                        $errorCount++;
+                    }
+                } else {
+                    // ✅ PERBAIKAN: Insert baru dengan query builder
+                    $insertData = [
+                        'nis' => $nis,
+                        'total_poin' => $total_poin,
+                        'seluruh_pelanggaran' => $seluruh_pelanggaran,
+                        'bulan_terbanyak' => $bulan_terbanyak,
+                        'sp_level' => $sp_level,
+                        'tahun_ajaran' => $tahun_ajaran,
+                        'semester' => $semester,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                    
+                    $insertResult = $this->db->table('rekapan')->insert($insertData);
+                    
+                    if ($insertResult) {
+                        log_message('debug', '✅ Inserted new rekapan for: ' . $nis);
+                        $successCount++;
+                    } else {
+                        log_message('error', '❌ Failed to insert rekapan for: ' . $nis);
+                        $errorCount++;
+                    }
+                }
+
+            } catch (\Exception $e) {
+                log_message('error', 'Error processing santri ' . $nis . ': ' . $e->getMessage());
+                $errorCount++;
+                continue; // Lanjut ke santri berikutnya
+            }
+        }
+
+        log_message('debug', '=== FINISHED GENERATE REKAPAN ===');
+        log_message('debug', 'Success: ' . $successCount . ', Errors: ' . $errorCount);
+        
+        return $successCount > 0;
+
+    } catch (\Exception $e) {
+        log_message('error', 'Error in generateRekapan: ' . $e->getMessage());
         return false;
     }
-
-    foreach ($allSantri as $santri) {
-        $nis = $santri['nis'];
-        
-        log_message('debug', 'Processing santri: ' . $nis . ' - ' . $santri['nama_santri']);
-
-        // **QUERY TOTAL POIN - SESUAIKAN DENGAN KOLOM YANG ADA**
-        if ($hasTahunAjaranInPoin && $hasSemesterInPoin) {
-            // Jika kolom tahun_ajaran dan semester ada
-            $totalPoinQuery = $this->db->query("
-                SELECT nis, SUM(poin) AS total_poin
-                FROM poin_bulanan 
-                WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
-                GROUP BY nis
-            ", [$nis, $tahun_ajaran, $semester]);
-        } else {
-            // **JIKA KOLOM TIDAK ADA, AMBIL SEMUA POIN (BACKWARD COMPATIBILITY)**
-            $totalPoinQuery = $this->db->query("
-                SELECT nis, SUM(poin) AS total_poin
-                FROM poin_bulanan 
-                WHERE nis = ?
-                GROUP BY nis
-            ", [$nis]);
-        }
-        
-        $totalRow = $totalPoinQuery->getRow();
-        $total_poin = $totalRow ? (int)$totalRow->total_poin : 0;
-
-        log_message('debug', 'Santri ' . $nis . ' total poin: ' . $total_poin);
-
-        // **AMBIL DATA PELANGGARAN - SESUAIKAN DENGAN KOLOM YANG ADA**
-        if ($hasTahunAjaranInPoin && $hasSemesterInPoin) {
-            $pelanggaranQuery = $this->db->query("
-                SELECT keterangan, poin, bulan, tanggal
-                FROM poin_bulanan
-                WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
-                ORDER BY tanggal DESC
-            ", [$nis, $tahun_ajaran, $semester]);
-        } else {
-            $pelanggaranQuery = $this->db->query("
-                SELECT keterangan, poin, bulan, tanggal
-                FROM poin_bulanan
-                WHERE nis = ?
-                ORDER BY tanggal DESC
-            ", [$nis]);
-        }
-        
-        $pelanggaranData = $pelanggaranQuery->getResultArray();
-        
-        // Format seluruh pelanggaran
-        $seluruh_pelanggaran = '-';
-        if (!empty($pelanggaranData)) {
-            $pelanggaranList = [];
-            foreach ($pelanggaranData as $p) {
-                $pelanggaranList[] = "{$p['keterangan']} ({$p['poin']} poin) - {$p['bulan']}";
-            }
-            $seluruh_pelanggaran = implode('; ', $pelanggaranList);
-        }
-
-        // **CARI BULAN TERBANYAK - SESUAIKAN DENGAN KOLOM YANG ADA**
-        if ($hasTahunAjaranInPoin && $hasSemesterInPoin) {
-            $bulanQuery = $this->db->query("
-                SELECT bulan, SUM(poin) AS total_bulan
-                FROM poin_bulanan
-                WHERE nis = ? AND tahun_ajaran = ? AND semester = ?
-                GROUP BY bulan
-                ORDER BY total_bulan DESC
-                LIMIT 1
-            ", [$nis, $tahun_ajaran, $semester]);
-        } else {
-            $bulanQuery = $this->db->query("
-                SELECT bulan, SUM(poin) AS total_bulan
-                FROM poin_bulanan
-                WHERE nis = ?
-                GROUP BY bulan
-                ORDER BY total_bulan DESC
-                LIMIT 1
-            ", [$nis]);
-        }
-        
-        $bulan = $bulanQuery->getRow();
-        $bulan_terbanyak = $bulan ? $bulan->bulan : '-';
-
-        // **TENTUKAN SP LEVEL**
-        $sp_level = $this->determineSPLevel($total_poin);
-
-        // **CEK APAKAH SUDAH ADA DI REKAPAN**
-        $existing = $this->where([
-            'nis' => $nis, 
-            'tahun_ajaran' => $tahun_ajaran, 
-            'semester' => $semester
-        ])->first();
-
-        if ($existing) {
-            // Update
-            $this->update($existing['id_rekap'], [
-                'total_poin' => $total_poin,
-                'seluruh_pelanggaran' => $seluruh_pelanggaran,
-                'bulan_terbanyak' => $bulan_terbanyak,
-                'sp_level' => $sp_level,
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
-            log_message('debug', 'Updated rekapan for: ' . $nis);
-        } else {
-            // Insert baru
-            $this->insert([
-                'nis' => $nis,
-                'total_poin' => $total_poin,
-                'seluruh_pelanggaran' => $seluruh_pelanggaran,
-                'bulan_terbanyak' => $bulan_terbanyak,
-                'sp_level' => $sp_level,
-                'tahun_ajaran' => $tahun_ajaran,
-                'semester' => $semester,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
-            log_message('debug', 'Inserted new rekapan for: ' . $nis);
-        }
-    }
-
-    log_message('debug', 'Finished generating rekapan for: ' . $tahun_ajaran . ' - ' . $semester);
-    return true;
 }
 
     /**

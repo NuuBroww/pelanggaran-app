@@ -147,15 +147,7 @@ body.dark-mode footer { color:#bbb; }
                     </span>
                     <span class="stat-label">Dashboard</span>
                 </a>
-            </div>
-
-            <!-- Tombol Toggle Theme -->
-            <div class="stat-item" style="cursor: pointer; background: rgba(52, 152, 219, 0.2);" id="themeToggle">
-                <span class="stat-number">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                </span>
-                <span class="stat-label" id="themeLabel">Dark Mode</span>
-            </div>
+            </div>  
         </div>
     </div>
 </nav>
