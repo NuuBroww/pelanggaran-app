@@ -578,6 +578,7 @@ body {
     box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
     position: relative;
     overflow: hidden;
+    margin-bottom: 14px;
 }
 
 .btn-detail:hover {
@@ -783,112 +784,380 @@ body {
     }
 }
 
+/* ===== MOBILE NAVBAR IMPROVEMENTS ===== */
 @media (max-width: 768px) {
     .container {
-        padding: 16px;
+        padding: 12px;
     }
     
     .header {
         flex-direction: column;
         gap: 16px;
         text-align: center;
-        padding: 20px;
+        padding: 16px;
+        margin-bottom: 16px;
     }
     
     .header-content h1 {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
+        line-height: 1.3;
+    }
+    
+    .header-content .subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 0.9rem;
     }
     
     .navbar-stats {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .stat-item {
+        padding: 12px 8px;
+        border-radius: 12px;
+    }
+    
+    .stat-number {
+        font-size: 1.3rem;
+    }
+    
+    .stat-label {
+        font-size: 0.7rem;
     }
     
     .semester-info-bar {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
-        padding: 16px 20px;
+        gap: 10px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+    }
+    
+    .semester-title {
+        font-size: 0.95rem;
+    }
+    
+    .pelanggaran-summary {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .total-poin-badge {
+        font-size: 0.8rem;
+        padding: 4px 10px;
     }
     
     .search-container {
-        max-width: 100%;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
+    }
+    
+    .search-box {
+        padding: 14px 45px 14px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .search-icon {
+        right: 16px;
     }
     
     .cards-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .santri-card {
-        padding: 20px;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .bulanan-grid {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    }
-    
-    .status-badges {
-        grid-template-columns: 1fr;
-    }
-    
-    .btn {
-        padding: 12px 20px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 12px;
-    }
-    
-    .header {
-        padding: 16px;
+        gap: 16px;
         margin-bottom: 20px;
     }
     
-    .header-content h1 {
-        font-size: 1.4rem;
-    }
-    
-    .header-content .subtitle {
-        font-size: 0.9rem;
-    }
-    
-    .semester-info-bar {
-        padding: 12px 16px;
-    }
-    
-    .pelanggaran-summary {
-        flex-direction: column;
-        gap: 8px;
-        text-align: center;
-        padding: 8px 12px;
+    .santri-card {
+        padding: 16px;
+        border-radius: 16px;
     }
     
     .card-header {
         gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
     }
     
     .santri-photo, .photo-placeholder {
         width: 60px;
         height: 60px;
-        font-size: 1.4rem;
+        font-size: 1.3rem;
     }
     
     .card-info h3 {
         font-size: 1.1rem;
     }
     
+    .card-nis {
+        font-size: 0.8rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+    
+    .stat-box {
+        padding: 12px;
+    }
+    
+    .stat-value {
+        font-size: 1.3rem;
+    }
+    
+    .poin-bulanan-section {
+        padding: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .bulanan-grid {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 6px;
+    }
+    
+    .bulanan-item {
+        padding: 8px 4px;
+    }
+    
+    .bulanan-bulan {
+        font-size: 0.7rem;
+    }
+    
+    .bulanan-poin {
+        font-size: 0.9rem;
+    }
+    
+    .semester-label {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+    }
+    
+    .status-badges {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .status-badge {
+        padding: 10px;
+        font-size: 0.75rem;
+    }
+    
+    .btn-detail {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+    
     .modal-content {
         padding: 20px;
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .modal-header {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+    }
+    
+    .modal-title {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .header {
+        padding: 12px;
+    }
+    
+    .header-content h1 {
+        font-size: 1.3rem;
+    }
+    
+    .semester-info-bar {
+        padding: 12px;
+    }
+    
+    .pelanggaran-summary {
+        flex-direction: column;
+        gap: 6px;
+        text-align: center;
+    }
+    
+    .santri-card {
+        padding: 14px;
+    }
+    
+    .bulanan-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ===== PIN MODAL STYLES ===== */
+.pin-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1500;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.pin-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+.pin-header {
+    margin-bottom: 24px;
+}
+
+.pin-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.pin-subtitle {
+    color: var(--gray);
+    font-size: 0.95rem;
+}
+
+.pin-input-container {
+    margin: 24px 0;
+}
+
+.pin-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    background: var(--light);
+}
+
+.pin-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background: white;
+}
+
+.pin-input::placeholder {
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+.pin-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-pin {
+    flex: 1;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-pin-confirm {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.btn-pin-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+.btn-pin-cancel {
+    background: var(--light);
+    color: var(--gray);
+    border: 2px solid var(--border);
+}
+
+.btn-pin-cancel:hover {
+    background: #f1f5f9;
+    color: var(--dark);
+}
+
+.pin-error {
+    color: var(--accent);
+    font-size: 0.9rem;
+    margin-top: 12px;
+    display: none;
+}
+
+.pin-hint {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: 8px;
+}
+
+/* Mobile styles for PIN modal */
+@media (max-width: 768px) {
+    .pin-modal-content {
+        padding: 24px 20px;
+    }
+    
+    .pin-title {
+        font-size: 1.2rem;
+    }
+    
+    .pin-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .pin-input {
+        padding: 14px 16px;
+        font-size: 1rem;
+    }
+    
+    .pin-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-pin {
+        padding: 12px 16px;
     }
 }
 
@@ -1174,6 +1443,7 @@ html {
             Total <?= count($santri ?? []) ?> santri ditemukan
         </div>
 
+
         <!-- No Results Message -->
         <div id="noResults" class="no-results">
             <i class="fas fa-search" style="font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5;"></i>
@@ -1213,7 +1483,7 @@ html {
                                       (($poinGenapSantri >= 100) ? 'SP1' : 'Aman'));
                     ?>
                     <div class="santri-card" data-nis="<?= $nis ?>" data-nama="<?= esc($row['nama_santri']) ?>">
-                        <div class="card-header">
+    <div class="card-header">
     <div class="photo-container">
         <?php if ($hasPhoto): 
             $photoPath = base_url('uploads/foto_santri/' . $fotoFileName);
@@ -1239,9 +1509,11 @@ html {
     </div>
     <div class="card-info">
         <h3><?= esc($row['nama_santri']) ?></h3>
-        <div class="card-nis">NIS: <?= esc($row['nis']) ?></div>
     </div>
 </div>
+       <button class="btn-detail" onclick="requestPin('<?= $nis ?>', '<?= esc($row['nama_santri']) ?>')">
+    <i class="fas fa-lock"></i> Lihat Detail Pelanggaran
+</button>
 
                         <!-- Stats Grid -->
                         <div class="stats-grid">
@@ -1254,6 +1526,7 @@ html {
                                 <div class="stat-label">Poin Semester Genap</div>
                             </div>
                         </div>
+                        
 
                         <!-- Poin Bulanan -->
                         <div class="poin-bulanan-section">
@@ -1303,9 +1576,7 @@ html {
                         </div>
 
                         <!-- Detail Button -->
-                        <button class="btn-detail" onclick="showDetail('<?= $nis ?>', '<?= esc($row['nama_santri']) ?>')">
-                            <i class="fas fa-list-alt"></i> Lihat Detail Pelanggaran
-                        </button>
+                 
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -1315,6 +1586,34 @@ html {
                     <p>Data santri akan muncul di sini</p>
                 </div>
             <?php endif; ?>
+        </div>
+    </div>
+<!-- Modal PIN -->
+    <div id="pinModal" class="modal pin-modal">
+        <div class="pin-modal-content">
+            <div class="pin-header">
+                <h2 class="pin-title">🔒 Masukkan NIS</h2>
+                <p class="pin-subtitle">Masukkan NIS santri untuk melihat detail pelanggaran</p>
+            </div>
+            
+            <div class="pin-input-container">
+                <input type="text" id="pinInput" class="pin-input" placeholder="Masukkan NIS..." maxlength="10" autocomplete="off">
+                <div id="pinError" class="pin-error">
+                    <i class="fas fa-exclamation-circle"></i> <span id="pinErrorText">NIS tidak valid!</span>
+                </div>
+                <div class="pin-hint">
+                    NIS terdiri dari angka (contoh: 12345)
+                </div>
+            </div>
+            
+            <div class="pin-buttons">
+                <button class="btn-pin btn-pin-cancel" onclick="closePinModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="btn-pin btn-pin-confirm" onclick="verifyPin()">
+                    <i class="fas fa-unlock"></i> Masuk
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1331,347 +1630,412 @@ html {
         </div>
     </div>
 
-    <script>
-    // JavaScript code remains the same as your original...
-    // ===== SEARCH FUNCTIONALITY =====
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
-    const noResults = document.getElementById('noResults');
-    const cardsContainer = document.getElementById('cardsContainer');
-    
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.santri-card');
-            let resultsCount = 0;
+    <!-- Modal Foto dengan Zoom -->
+    <div id="fotoModal" class="modal foto-modal">
+        <div class="modal-content">
+            <div class="foto-controls">
+                <button class="foto-control-btn" onclick="zoomFoto()" id="zoomBtn" title="Zoom In/Out">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="foto-control-btn foto-close-btn" onclick="tutupFotoModal()" title="Tutup">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
             
-            cards.forEach(card => {
-                const title = card.querySelector('.card-info h3')?.textContent.toLowerCase() || '';
-                const nis = card.querySelector('.card-nis')?.textContent.toLowerCase() || '';
-                
-                if (title.includes(searchTerm) || nis.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    resultsCount++;
-                    
-                    // Highlight matching text
-                    if (searchTerm) {
-                        highlightText(card.querySelector('.card-info h3'), searchTerm);
-                        highlightText(card.querySelector('.card-nis'), searchTerm);
-                    }
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            // Update results counter
-            if (searchResults) {
-                searchResults.textContent = searchTerm ? 
-                    `${resultsCount} santri ditemukan` : 
-                    `Total ${resultsCount} santri ditemukan`;
-                searchResults.style.color = searchTerm ? 
-                    (resultsCount > 0 ? '#27ae60' : '#e74c3c') : 
-                    'white';
-            }
-            
-            // Show/hide no results message
-            if (noResults) {
-                if (searchTerm && resultsCount === 0) {
-                    noResults.style.display = 'block';
-                } else {
-                    noResults.style.display = 'none';
-                }
-            }
-            
-            // Remove highlights when search is cleared
-            if (!searchTerm) {
-                removeHighlights();
-            }
-        });
-        
-        // Clear search on escape key
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                searchInput.value = '';
-                searchInput.dispatchEvent(new Event('input'));
-                searchInput.blur();
-            }
-        });
-    }
-    
-    // Function to highlight text
-    function highlightText(element, searchTerm) {
-        const text = element.textContent;
-        const regex = new RegExp(`(${searchTerm})`, 'gi');
-        const highlighted = text.replace(regex, '<span class="highlight">$1</span>');
-        element.innerHTML = highlighted;
-    }
-    
-    // Function to remove all highlights
-    function removeHighlights() {
-        const highlights = document.querySelectorAll('.highlight');
-        highlights.forEach(highlight => {
-            const parent = highlight.parentNode;
-            parent.textContent = parent.textContent;
-        });
-    }
+            <div class="modal-body" style="text-align: center; padding: 0; display: flex; flex-direction: column; align-items: center;">
+                <div id="fotoLoading" class="foto-loading" style="display: none;">
+                    <div class="foto-loading-spinner"></div>
+                    <p>Memuat foto...</p>
+                </div>
+                <img id="fotoFull" class="foto-full" src="" alt="Foto Santri" style="display: none;" onclick="toggleZoom()">
+                <div class="foto-info">
+                    <h4 id="fotoSantriName"></h4>
+                    <p id="fotoSantriNis"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    // ===== MODAL FUNCTIONS =====
-    function showDetail(nis, nama) {
-        console.log('Opening modal for:', nis, nama);
+    <script>
+// ===== GLOBAL VARIABLES =====
+let currentNis = '';
+let currentNama = '';
+let isFotoZoomed = false;
+
+// ===== PIN FUNCTIONALITY =====
+function requestPin(nis, nama) {
+    console.log('🔐 Request PIN called with:', nis, nama);
+    
+    // Pastikan variabel diisi dengan benar
+    currentNis = nis;
+    currentNama = nama;
+    
+    console.log('🔐 Current NIS set to:', currentNis);
+    console.log('🔐 Current Nama set to:', currentNama);
+    
+    // Reset PIN modal
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinError').style.display = 'none';
+    
+    // Show PIN modal
+    document.getElementById('pinModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on input
+    setTimeout(() => {
+        document.getElementById('pinInput').focus();
+    }, 100);
+}
+
+function closePinModal() {
+    document.getElementById('pinModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    // Jangan reset currentNis di sini, karena masih diperlukan untuk showDetail
+}
+
+function verifyPin() {
+    const pinInput = document.getElementById('pinInput');
+    const enteredPin = pinInput.value.trim();
+    const pinError = document.getElementById('pinError');
+    
+    console.log('🔍 Verifying PIN:', enteredPin);
+    console.log('🔍 Expected NIS:', currentNis);
+    console.log('🔍 Current Nama:', currentNama);
+    
+    if (!enteredPin) {
+        pinError.textContent = '⚠️ Harap masukkan NIS!';
+        pinError.style.display = 'block';
+        pinInput.focus();
+        return;
+    }
+    
+    if (!/^\d+$/.test(enteredPin)) {
+        pinError.textContent = '❌ NIS harus berupa angka!';
+        pinError.style.display = 'block';
+        pinInput.focus();
+        return;
+    }
+    
+    if (enteredPin === currentNis) {
+        console.log('✅ PIN verified successfully');
+        console.log('✅ Opening detail for:', currentNama, 'NIS:', currentNis);
+        closePinModal();
+        showDetail(currentNis, currentNama);
+    } else {
+        pinError.textContent = '❌ NIS tidak sesuai!';
+        pinError.style.display = 'block';
+        pinInput.focus();
+        pinInput.select();
         
-        document.getElementById('modalSantriName').textContent = `Detail Pelanggaran - ${nama}`;
+        pinInput.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+            pinInput.style.animation = '';
+        }, 500);
+    }
+}
+
+// ===== MODAL FUNCTIONS =====
+function showDetail(nis, nama) {
+    console.log('🎯 showDetail called with:', nis, nama);
+    console.log('🎯 Global currentNis:', currentNis);
+    console.log('🎯 Global currentNama:', currentNama);
+    
+    // Update modal title
+    document.getElementById('modalSantriName').textContent = `Detail Pelanggaran - ${nama}`;
+    document.getElementById('modalContent').innerHTML = `
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Memuat data pelanggaran...</p>
+        </div>
+    `;
+    document.getElementById('detailModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+    // Gunakan base_url dari PHP
+    const baseUrl = '<?= base_url() ?>';
+    console.log('🌐 Base URL:', baseUrl);
+    
+    // Coba endpoint yang berhasil berdasarkan test manual
+    const endpoints = [
+        `${baseUrl}getDetailPelanggaran/${nis}`,
+        `${baseUrl}umum/getDetailPelanggaran/${nis}`,
+        `/getDetailPelanggaran/${nis}`,
+        `/umum/getDetailPelanggaran/${nis}`
+    ];
+    
+    console.log('🔄 Endpoints to try:', endpoints);
+    
+    let currentEndpointIndex = 0;
+    
+    function tryEndpoint() {
+        if (currentEndpointIndex >= endpoints.length) {
+            showErrorModal('Semua endpoint gagal. Periksa konfigurasi routes.');
+            return;
+        }
+        
+        const endpoint = endpoints[currentEndpointIndex];
+        console.log(`🔄 Mencoba endpoint ${currentEndpointIndex + 1}/${endpoints.length}: ${endpoint}`);
+        
+        // Show which endpoint is being tried
         document.getElementById('modalContent').innerHTML = `
             <div class="loading">
                 <div class="loading-spinner"></div>
                 <p>Memuat data pelanggaran...</p>
+                <p style="font-size: 12px; margin-top: 10px;">
+                    Mencoba: ${endpoint}<br>
+                    Santri: ${nama} (NIS: ${nis})
+                </p>
             </div>
         `;
-        document.getElementById('detailModal').style.display = 'flex';
         
-        // Prevent background scroll
-        document.body.style.overflow = 'hidden';
-        
-        // Fetch real data from API
-        fetch(`/umum/getDetailPelanggaran/${nis}`)
+        fetch(endpoint)
             .then(response => {
+                console.log('📡 Response status:', response.status, response.statusText);
+                console.log('📡 Response URL:', response.url);
+                
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 return response.json();
             })
             .then(data => {
-                console.log('Data received:', data);
+                console.log('✅ Data received successfully:', data);
                 if (data.success) {
-                    displayPelanggaranData(data.data, nis);
+                    displayPelanggaranData(data.data, data.santri);
                 } else {
-                    document.getElementById('modalContent').innerHTML = `
-                        <div class="no-data">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <h3>Gagal memuat data</h3>
-                            <p>${data.message || 'Silakan coba lagi'}</p>
-                        </div>
-                    `;
+                    showErrorModal(data.message || 'Data tidak ditemukan');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('modalContent').innerHTML = `
-                    <div class="no-data">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <h3>Error memuat data</h3>
-                        <p>Terjadi kesalahan saat mengambil data. Pastikan koneksi internet stabil.</p>
+                console.error(`❌ Error dari ${endpoint}:`, error);
+                currentEndpointIndex++;
+                
+                if (currentEndpointIndex < endpoints.length) {
+                    // Coba endpoint berikutnya setelah delay
+                    setTimeout(tryEndpoint, 500);
+                } else {
+                    showErrorModal(`Semua endpoint gagal. Error: ${error.message}`);
+                }
+            });
+    }
+    
+    // Mulai dengan endpoint pertama
+    tryEndpoint();
+}
+
+function showErrorModal(message) {
+    console.log('❌ Showing error modal:', message);
+    
+    document.getElementById('modalContent').innerHTML = `
+        <div class="no-data">
+            <i class="fas fa-exclamation-circle"></i>
+            <h3>Error memuat data</h3>
+            <p>${message}</p>
+            <div style="margin-top: 20px; font-size: 12px; text-align: left; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                <strong>Debug Info:</strong><br>
+                - Base URL: <?= base_url() ?><br>
+                - Current NIS: ${currentNis}<br>
+                - Current Nama: ${currentNama}<br>
+                - Coba akses manual:<br>
+                &nbsp;&nbsp;<a href="<?= base_url() ?>getDetailPelanggaran/${currentNis}" target="_blank">
+                    <?= base_url() ?>getDetailPelanggaran/${currentNis}
+                </a>
+                <br><br>
+                <strong>Langkah troubleshooting:</strong><br>
+                1. Buka link manual di atas di tab baru<br>
+                2. Pastikan menampilkan data JSON<br>
+                3. Jika error, periksa routes dan controller
+            </div>
+        </div>
+    `;
+}
+
+function closeDetail() {
+    document.getElementById('detailModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    // Reset variabel setelah modal ditutup
+    currentNis = '';
+    currentNama = '';
+}
+
+function displayPelanggaranData(pelanggaranData, santriInfo) {
+    console.log('📊 Displaying pelanggaran data:', pelanggaranData);
+    
+    if (!pelanggaranData || pelanggaranData.length === 0) {
+        document.getElementById('modalContent').innerHTML = `
+            <div class="no-data">
+                <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                <h3>Tidak ada pelanggaran</h3>
+                <p>Santri ${santriInfo.nama} (NIS: ${santriInfo.nis}) belum memiliki catatan pelanggaran</p>
+            </div>
+        `;
+        return;
+    }
+
+    const groupedData = {
+        ganjil: [],
+        genap: []
+    };
+
+    pelanggaranData.forEach(item => {
+        const semester = item.semester?.toLowerCase() || 'ganjil';
+        groupedData[semester].push(item);
+    });
+
+    let html = `
+        <div class="pelanggaran-list">
+            <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px;">
+                <strong>${santriInfo.nama} - NIS: ${santriInfo.nis}</strong><br>
+                <small>Total Pelanggaran: ${pelanggaranData.length}</small>
+            </div>
+    `;
+
+    ['ganjil', 'genap'].forEach(semester => {
+        const semesterData = groupedData[semester];
+        if (semesterData.length > 0) {
+            const semesterName = semester === 'ganjil' ? 'Semester Ganjil' : 'Semester Genap';
+            const totalPoin = semesterData.reduce((sum, item) => sum + (item.poin || 0), 0);
+            
+            html += `
+                <div style="margin-bottom: 20px;">
+                    <div style="padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
+                        <strong>${semesterName}</strong> - ${semesterData.length} pelanggaran (Total: ${totalPoin} Poin)
+                    </div>
+            `;
+
+            semesterData.forEach(item => {
+                const tanggal = new Date(item.tanggal).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const poin = item.poin || 0;
+                let poinColor = '#27ae60';
+                if (poin >= 20) poinColor = '#e74c3c';
+                else if (poin >= 10) poinColor = '#f39c12';
+
+                html += `
+                    <div class="pelanggaran-item">
+                        <div class="pelanggaran-info">
+                            <div class="pelanggaran-desc">${item.deskripsi || 'Pelanggaran'}</div>
+                            <div class="pelanggaran-meta">
+                                <i class="fas fa-calendar"></i> ${tanggal}
+                                ${item.keterangan ? ` • <i class="fas fa-info-circle"></i> ${item.keterangan}` : ''}
+                                ${item.pelapor ? ` • <i class="fas fa-user"></i> ${item.pelapor}` : ''}
+                                ${item.semester ? ` • <i>Semester</i> ${item.semester}` : ''}
+                            </div>
+                        </div>
+                        <div class="pelanggaran-poin" style="background: ${poinColor}">
+                            ${poin} Poin
+                        </div>
                     </div>
                 `;
             });
-    }
 
-    function closeDetail() {
-        document.getElementById('detailModal').style.display = 'none';
-        // Restore background scroll
-        document.body.style.overflow = 'auto';
-    }
-
-    function displayPelanggaranData(pelanggaranData, nis) {
-        if (!pelanggaranData || pelanggaranData.length === 0) {
-            document.getElementById('modalContent').innerHTML = `
-                <div class="no-data">
-                    <i class="fas fa-check-circle" style="color: #27ae60;"></i>
-                    <h3>Tidak ada pelanggaran</h3>
-                    <p>Santri ini belum memiliki catatan pelanggaran</p>
-                </div>
-            `;
-            return;
-        }
-
-        // Group by semester
-        const groupedData = {
-            ganjil: [],
-            genap: []
-        };
-
-        pelanggaranData.forEach(item => {
-            const semester = item.semester?.toLowerCase() || 'ganjil';
-            if (semester === 'ganjil' || semester === 'genap') {
-                groupedData[semester].push(item);
-            } else {
-                groupedData.ganjil.push(item); // default to ganjil
-            }
-        });
-
-        let html = `
-            <div class="pelanggaran-list">
-                <div style="margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px;">
-                    <strong>Total Pelanggaran: ${pelanggaranData.length}</strong>
-                </div>
-        `;
-
-        // Display by semester
-        ['ganjil', 'genap'].forEach(semester => {
-            const semesterData = groupedData[semester];
-            if (semesterData.length > 0) {
-                const semesterName = semester === 'ganjil' ? 'Semester Ganjil' : 'Semester Genap';
-                const totalPoin = semesterData.reduce((sum, item) => sum + (item.poin || 0), 0);
-                
-                html += `
-                    <div style="margin-bottom: 20px;">
-                        <div style="padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 10px;">
-                            <strong>${semesterName}</strong> - ${semesterData.length} pelanggaran (Total: ${totalPoin} Poin)
-                        </div>
-                `;
-
-                semesterData.forEach(item => {
-                    const tanggal = new Date(item.tanggal).toLocaleDateString('id-ID', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                    
-                    // Determine poin color based on severity
-                    const poin = item.poin || 0;
-                    let poinColor = '#27ae60'; // green for low
-                    if (poin >= 20) poinColor = '#e74c3c'; // red for high
-                    else if (poin >= 10) poinColor = '#f39c12'; // orange for medium
-
-                    html += `
-                        <div class="pelanggaran-item">
-                            <div class="pelanggaran-info">
-                                <div class="pelanggaran-desc">${item.deskripsi || 'Pelanggaran'}</div>
-                                <div class="pelanggaran-meta">
-                                    <i class="fas fa-calendar"></i> ${tanggal}
-                                    ${item.keterangan ? ` • <i class="fas fa-info-circle"></i> ${item.keterangan}` : ''}
-                                    ${item.pelapor ? ` • <i class="fas fa-user"></i> ${item.pelapor}` : ''}
-                                </div>
-                            </div>
-                            <div class="pelanggaran-poin" style="background: ${poinColor}">
-                                ${poin} Poin
-                            </div>
-                        </div>
-                    `;
-                });
-
-                html += `</div>`;
-            }
-        });
-
-        html += `</div>`;
-        document.getElementById('modalContent').innerHTML = html;
-    }
-
-    // ===== EVENT LISTENERS =====
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('detailModal');
-        if (event.target === modal) {
-            closeDetail();
-        }
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closeDetail();
+            html += `</div>`;
         }
     });
 
-    // Handle image loading errors
-    document.addEventListener('DOMContentLoaded', function() {
-        const images = document.querySelectorAll('.santri-photo');
-        images.forEach(img => {
-            img.addEventListener('error', function() {
-                this.style.display = 'none';
-                const placeholder = this.nextElementSibling;
-                if (placeholder && placeholder.classList.contains('photo-placeholder')) {
-                    placeholder.style.display = 'flex';
-                }
-            });
-        });
+    html += `</div>`;
+    document.getElementById('modalContent').innerHTML = html;
+}
 
-        // Add animation to cards on load
+// ===== SEARCH FUNCTIONALITY =====
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const noResults = document.getElementById('noResults');
+
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase().trim();
         const cards = document.querySelectorAll('.santri-card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.5s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    });
-
-    // Real-time clock update (jika diperlukan)
-    function updateClock() {
-        const now = new Date();
-        const options = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: 'Asia/Jakarta'
-        };
-        const dateTimeStr = now.toLocaleDateString('id-ID', options);
+        let resultsCount = 0;
         
-        const clockElement = document.getElementById('currentDateTime');
-        if (clockElement) {
-            clockElement.textContent = dateTimeStr;
+        cards.forEach(card => {
+            const title = card.querySelector('.card-info h3')?.textContent.toLowerCase() || '';
+            const nis = card.getAttribute('data-nis') || '';
+            
+            if (title.includes(searchTerm) || nis.includes(searchTerm)) {
+                card.style.display = 'block';
+                resultsCount++;
+                
+                if (searchTerm) {
+                    highlightText(card.querySelector('.card-info h3'), searchTerm);
+                }
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        if (searchResults) {
+            searchResults.textContent = searchTerm ? 
+                `${resultsCount} santri ditemukan` : 
+                `Total ${resultsCount} santri ditemukan`;
         }
-    }
-
-    // Initialize clock if element exists
-    if (document.getElementById('currentDateTime')) {
-        updateClock();
-        setInterval(updateClock, 1000);
-    }
-
-    console.log('JavaScript loaded successfully');
-    // ===== FOTO MODAL & ZOOM FUNCTIONALITY =====
-let isFotoZoomed = false;
-
-function tampilkanFoto(photoPath, nama, nis) {
-    console.log('🖼️ Membuka foto:', nama, 'Path:', photoPath);
+        
+        if (noResults) {
+            noResults.style.display = (searchTerm && resultsCount === 0) ? 'block' : 'none';
+        }
+        
+        if (!searchTerm) {
+            removeHighlights();
+        }
+    });
     
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchInput.blur();
+        }
+    });
+}
+
+function highlightText(element, searchTerm) {
+    const text = element.textContent;
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const highlighted = text.replace(regex, '<span class="highlight">$1</span>');
+    element.innerHTML = highlighted;
+}
+
+function removeHighlights() {
+    const highlights = document.querySelectorAll('.highlight');
+    highlights.forEach(highlight => {
+        const parent = highlight.parentNode;
+        parent.textContent = parent.textContent;
+    });
+}
+
+// ===== FOTO FUNCTIONALITY =====
+function tampilkanFoto(photoPath, nama, nis) {
     const modal = document.getElementById('fotoModal');
     const fotoFull = document.getElementById('fotoFull');
     const fotoLoading = document.getElementById('fotoLoading');
-    const zoomBtn = document.getElementById('zoomBtn');
     
-    // Reset state
     isFotoZoomed = false;
     fotoFull.classList.remove('zoomed');
-    zoomBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+    document.getElementById('zoomBtn').innerHTML = '<i class="fas fa-search-plus"></i>';
     
-    // Set info
     document.getElementById('fotoSantriName').textContent = nama;
-    document.getElementById('fotoSantriNis').textContent = 'NIS: ' + nis;
     
-    // Tampilkan modal dan loading
     modal.style.display = 'flex';
     fotoLoading.style.display = 'flex';
     fotoFull.style.display = 'none';
     
-    // Preload image
     const img = new Image();
     img.onload = function() {
-        console.log('✅ Foto berhasil dimuat');
         fotoFull.src = photoPath;
         fotoLoading.style.display = 'none';
         fotoFull.style.display = 'block';
-        
-        // Add animation
-        fotoFull.style.animation = 'fadeInScale 0.4s ease';
     };
     
     img.onerror = function() {
-        console.error('❌ Gagal memuat foto');
         fotoLoading.innerHTML = `
-            <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+            <i class="fas fa-exclamation-circle"></i>
             <p>Gagal memuat foto</p>
-            <button class="btn" onclick="tutupFotoModal()" style="margin-top: 10px;">
+            <button class="btn" onclick="tutupFotoModal()">
                 <i class="fas fa-times"></i> Tutup
             </button>
         `;
@@ -1683,8 +2047,6 @@ function tampilkanFoto(photoPath, nama, nis) {
 function tutupFotoModal() {
     document.getElementById('fotoModal').style.display = 'none';
     isFotoZoomed = false;
-    
-    // Reset zoom state untuk next open
     const fotoFull = document.getElementById('fotoFull');
     fotoFull.classList.remove('zoomed');
     document.getElementById('zoomBtn').innerHTML = '<i class="fas fa-search-plus"></i>';
@@ -1697,13 +2059,10 @@ function toggleZoom() {
     isFotoZoomed = !isFotoZoomed;
     fotoFull.classList.toggle('zoomed', isFotoZoomed);
     
-    // Update zoom button icon
     if (isFotoZoomed) {
         zoomBtn.innerHTML = '<i class="fas fa-search-minus"></i>';
-        zoomBtn.title = 'Zoom Out';
     } else {
         zoomBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
-        zoomBtn.title = 'Zoom In';
     }
 }
 
@@ -1711,7 +2070,78 @@ function zoomFoto() {
     toggleZoom();
 }
 
-// Update photo container di card untuk support click
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Application initialized');
+    
+    // Initialize photos
+    updatePhotoContainers();
+    enhanceCardPhotos();
+    
+    // Animate cards
+    const cards = document.querySelectorAll('.santri-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+
+    // Handle image errors
+    const images = document.querySelectorAll('.santri-photo');
+    images.forEach(img => {
+        img.addEventListener('error', function() {
+            this.style.display = 'none';
+            const placeholder = this.nextElementSibling;
+            if (placeholder && placeholder.classList.contains('photo-placeholder')) {
+                placeholder.style.display = 'flex';
+            }
+        });
+    });
+
+    // PIN modal events
+    document.getElementById('pinInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            verifyPin();
+        }
+    });
+
+    // Escape key untuk semua modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('pinModal').style.display === 'flex') {
+                closePinModal();
+            } else if (document.getElementById('detailModal').style.display === 'flex') {
+                closeDetail();
+            } else if (document.getElementById('fotoModal').style.display === 'flex') {
+                tutupFotoModal();
+            }
+        }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('pinModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePinModal();
+        }
+    });
+
+    window.addEventListener('click', function(event) {
+        const modals = ['detailModal', 'fotoModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (event.target === modal) {
+                if (modalId === 'detailModal') closeDetail();
+                if (modalId === 'fotoModal') tutupFotoModal();
+            }
+        });
+    });
+});
+
 function updatePhotoContainers() {
     const photoContainers = document.querySelectorAll('.photo-container');
     
@@ -1720,10 +2150,9 @@ function updatePhotoContainers() {
         const placeholder = container.querySelector('.photo-placeholder');
         const card = container.closest('.santri-card');
         const nama = card.querySelector('.card-info h3')?.textContent || '';
-        const nis = card.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
+        const nis = card.getAttribute('data-nis') || '';
         
         if (img && img.src && !img.src.includes('undefined')) {
-            // Image exists and loaded successfully
             img.style.cursor = 'pointer';
             img.addEventListener('click', function() {
                 tampilkanFoto(this.src, nama, nis);
@@ -1733,12 +2162,10 @@ function updatePhotoContainers() {
         if (placeholder) {
             placeholder.style.cursor = 'pointer';
             placeholder.addEventListener('click', function() {
-                // Jika ada image tapi error, coba pakai image source
                 const imgSrc = container.querySelector('.santri-photo')?.src;
                 if (imgSrc && !imgSrc.includes('undefined')) {
                     tampilkanFoto(imgSrc, nama, nis);
                 } else {
-                    // Tampilkan placeholder saja
                     alert('Foto tidak tersedia untuk ' + nama);
                 }
             });
@@ -1746,7 +2173,6 @@ function updatePhotoContainers() {
     });
 }
 
-// ===== ENHANCED CARD PHOTO INTERACTION =====
 function enhanceCardPhotos() {
     const cards = document.querySelectorAll('.santri-card');
     
@@ -1754,171 +2180,45 @@ function enhanceCardPhotos() {
         const photoContainer = card.querySelector('.photo-container');
         const img = photoContainer?.querySelector('.santri-photo');
         const placeholder = photoContainer?.querySelector('.photo-placeholder');
-        const nama = card.querySelector('.card-info h3')?.textContent || '';
-        const nis = card.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
         
-        // Add hover effects
         if (img) {
             img.style.transition = 'all 0.3s ease';
-            img.parentElement.style.transition = 'all 0.3s ease';
-            
             img.parentElement.addEventListener('mouseenter', function() {
                 if (img.style.display !== 'none') {
                     img.style.transform = 'scale(1.05)';
-                    img.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.25)';
                 }
             });
-            
             img.parentElement.addEventListener('mouseleave', function() {
                 if (img.style.display !== 'none') {
                     img.style.transform = 'scale(1)';
-                    img.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
                 }
             });
         }
         
         if (placeholder) {
             placeholder.style.transition = 'all 0.3s ease';
-            
             placeholder.addEventListener('mouseenter', function() {
                 this.style.transform = 'scale(1.05)';
-                this.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.25)';
             });
-            
             placeholder.addEventListener('mouseleave', function() {
                 this.style.transform = 'scale(1)';
-                this.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
             });
         }
     });
 }
 
-// ===== EVENT LISTENERS FOR FOTO MODAL =====
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize photo functionality
-    updatePhotoContainers();
-    enhanceCardPhotos();
-    
-    // Close modal when clicking outside image
-    document.getElementById('fotoModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            tutupFotoModal();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && document.getElementById('fotoModal').style.display === 'flex') {
-            tutupFotoModal();
-        }
-    });
-    
-    // Handle image errors and retry
-    const images = document.querySelectorAll('.santri-photo');
-    images.forEach(img => {
-        img.addEventListener('error', function() {
-            console.warn('❌ Gambar gagal dimuat:', this.src);
-            this.style.display = 'none';
-            const placeholder = this.nextElementSibling;
-            if (placeholder && placeholder.classList.contains('photo-placeholder')) {
-                placeholder.style.display = 'flex';
-                
-                // Update click handler untuk placeholder
-                const card = this.closest('.santri-card');
-                const nama = card?.querySelector('.card-info h3')?.textContent || '';
-                const nis = card?.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
-                
-                placeholder.onclick = function() {
-                    // Coba load image lagi
-                    const imgSrc = img.src;
-                    if (imgSrc && !imgSrc.includes('undefined')) {
-                        // Buat cache busting URL
-                        const cacheBustUrl = imgSrc + (imgSrc.includes('?') ? '&' : '?') + 't=' + Date.now();
-                        const testImg = new Image();
-                        
-                        testImg.onload = function() {
-                            tampilkanFoto(cacheBustUrl, nama, nis);
-                        };
-                        
-                        testImg.onerror = function() {
-                            alert('Foto tidak dapat dimuat untuk ' + nama);
-                        };
-                        
-                        testImg.src = cacheBustUrl;
-                    } else {
-                        alert('Foto tidak tersedia untuk ' + nama);
-                    }
-                };
-            }
-        });
-        
-        // Add click handler for successful images
-        img.addEventListener('load', function() {
-            console.log('✅ Gambar berhasil dimuat:', this.src);
-            const card = this.closest('.santri-card');
-            const nama = card?.querySelector('.card-info h3')?.textContent || '';
-            const nis = card?.querySelector('.card-nis')?.textContent?.replace('NIS: ', '') || '';
-            
-            this.onclick = function() {
-                tampilkanFoto(this.src, nama, nis);
-            };
-        });
-    });
-});
-
-// ===== SWIPE SUPPORT FOR MOBILE =====
-let startX = 0;
-let currentX = 0;
-
-document.getElementById('fotoFull').addEventListener('touchstart', function(e) {
-    startX = e.touches[0].clientX;
-});
-
-document.getElementById('fotoFull').addEventListener('touchmove', function(e) {
-    if (!isFotoZoomed) {
-        currentX = e.touches[0].clientX;
+// Shake animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
     }
-});
+`;
+document.head.appendChild(style);
 
-document.getElementById('fotoFull').addEventListener('touchend', function(e) {
-    if (!isFotoZoomed) {
-        const diff = startX - currentX;
-        if (Math.abs(diff) > 50) { // Minimum swipe distance
-            if (diff > 0) {
-                // Swipe left - close modal
-                tutupFotoModal();
-            }
-            // You can add more swipe directions here if needed
-        }
-    }
-});
-
-console.log('🖼️ Foto zoom functionality loaded');
-    </script>
-    <!-- Modal Foto dengan Zoom -->
-<div id="fotoModal" class="modal foto-modal">
-    <div class="modal-content">
-        <div class="foto-controls">
-            <button class="foto-control-btn" onclick="zoomFoto()" id="zoomBtn" title="Zoom In/Out">
-                <i class="fas fa-search-plus"></i>
-            </button>
-            <button class="foto-control-btn foto-close-btn" onclick="tutupFotoModal()" title="Tutup">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="modal-body" style="text-align: center; padding: 0; display: flex; flex-direction: column; align-items: center;">
-            <div id="fotoLoading" class="foto-loading" style="display: none;">
-                <div class="foto-loading-spinner"></div>
-                <p>Memuat foto...</p>
-            </div>
-            <img id="fotoFull" class="foto-full" src="" alt="Foto Santri" style="display: none;" onclick="toggleZoom()">
-            <div class="foto-info">
-                <h4 id="fotoSantriName"></h4>
-                <p id="fotoSantriNis"></p>
-            </div>
-        </div>
-    </div>
-</div>
+console.log('✅ All JavaScript loaded');
+</script>
 </body>
 </html>
